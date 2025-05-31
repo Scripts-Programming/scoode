@@ -6,14 +6,30 @@
   <title>הזמנות ספרים</title>
   <style>
     body {
-      font-family: 'Alef', sans-serif;
-      background: linear-gradient(to right, #f0f8ff, #d4ecff);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
-      padding: 20px;
+      background: linear-gradient(135deg, #a855f7, #ffffff, #3b82f6); /* סגול, לבן, כחול */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+      padding: 20px; /* הוספה של ריפוד כללי לגוף */
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.8); /* רקע לבן שקוף מעט */
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 80%;
+      max-width: 600px;
     }
     h1 {
-      text-align: center;
-      color: #004080;
+      color: #a855f7; /* סגול */
+      margin-bottom: 30px;
+      font-size: 2.5em;
+      text-shadow: 1px 1px #ddd;
     }
     .book-list {
       display: grid;
@@ -45,12 +61,15 @@
       border: 1px solid #ccc;
     }
     button {
-      background-color: #0077cc;
+      background-color: #3b82f6; /* כחול */
       color: white;
       cursor: pointer;
     }
     button:hover {
-      background-color: #005fa3;
+      background-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      color: #fff;
+      backdrop-filter: blur(5px);
     }
     .admin-link, .back-link {
       text-align: center;
@@ -68,10 +87,11 @@
       display: none;
       max-width: 700px;
       margin: 30px auto;
-      background: #ffffffee;
+      background: rgba(255, 255, 255, 0.8);
       padding: 20px;
       border-radius: 15px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: right; /* יישור לימין כמו בעיצוב השני */
     }
 
     /* Modal */
@@ -95,42 +115,208 @@
     .modal input {
       margin: 5px 0;
     }
+
+    /* Additional styles from the second code snippet for consistency */
+    .button {
+      padding: 12px 24px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      color: #fff;
+      background-color: #3b82f6; /* כחול */
+    }
+    .admin-button {
+      background-color: #a855f7; /* סגול */
+    }
+    .student-button {
+      background-color: #3b82f6; /* כחול */
+    }
+    .login-container {
+      display: none;
+      margin-top: 30px;
+    }
+    .login-container h2 {
+      color: #a855f7; /* סגול */
+      margin-bottom: 20px;
+    }
+    .login-container label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
+    }
+    .login-container input[type="password"] {
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    .login-container button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      background-color: #3b82f6; /* כחול */
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+    .login-container button:hover {
+      opacity: 0.8;
+    }
+    .book-list-container {
+      display: none;
+      margin-top: 30px;
+      text-align: right;
+    }
+    .book-list-container h2 {
+      color: #a855f7; /* סגול */
+      margin-bottom: 20px;
+    }
+    .book-list-container ul {
+      list-style: none;
+      padding: 0;
+    }
+    .book-list-container li {
+      margin-bottom: 15px;
+    }
+    .book-link {
+      color: #3b82f6; /* כחול */
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.1em;
+      transition: color 0.3s ease;
+    }
+    .book-link:hover {
+      color: #a855f7; /* סגול */
+    }
+    .registration-form {
+      display: none;
+      background-color: rgba(255, 255, 255, 0.8);
+      color: #333;
+      padding: 30px;
+      border-radius: 12px;
+      margin-top: 30px;
+      text-align: right;
+    }
+    .registration-form h2 {
+      color: #3b82f6; /* כחול */
+      margin-bottom: 20px;
+    }
+    .registration-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
+    }
+    .registration-form input[type="text"],
+    .registration-form input[type="email"],
+    .registration-form input[type="tel"] {
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    .registration-form button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      background-color: #3b82f6; /* כחול */
+      color: white;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+    .registration-form button:hover {
+      opacity: 0.8;
+    }
+    .success-message {
+      display: none;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #e0f2f7; /* תכלת בהיר */
+      color: #0d47a1; /* כחול כהה */
+      border: 1px solid #b3e5fc;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.1em;
+      font-weight: bold;
+    }
+    .admin-panel {
+      display: none;
+      margin-top: 30px;
+      padding: 30px;
+      background-color: rgba(255, 255, 255, 0.8); /* רקע לבן שקוף מעט */
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      text-align: right;
+    }
+    .admin-panel h2 {
+      color: #a855f7; /* סגול */
+      margin-bottom: 20px;
+    }
+    .admin-panel ul {
+      list-style: none;
+      padding: 0;
+    }
+    .admin-panel li {
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 16px;
+      color: #555;
+    }
+    .admin-panel li:last-child {
+      border-bottom: none;
+    }
   </style>
 </head>
 <body>
-  <h1>להזמנות 👇</h1>
+  <div class="container">
+    <h1>להזמנות 👇</h1>
 
-  <div class="book-list" id="bookList"></div>
+    <div class="book-list" id="bookList"></div>
 
-  <div class="admin-link">
-    <button onclick="document.getElementById('adminLogin').style.display='block'">כניסת מנהל</button>
-  </div>
-
-  <div class="admin-panel" id="adminLogin">
-    <h2>כניסת מנהל</h2>
-    <input type="password" id="adminPassword" placeholder="סיסמה">
-    <button onclick="loginAdmin()">כניסה</button>
-  </div>
-
-  <div class="admin-panel" id="adminPanel">
-    <h2>ניהול ספרים</h2>
-    <input type="text" id="newBookName" placeholder="שם הספר החדש">
-    <button onclick="addBook()">הוסף ספר</button>
-    <div>
-      <h3>רשימת הספרים</h3>
-      <div id="adminBookList"></div>
+    <div class="admin-link">
+      <button onclick="document.getElementById('adminLogin').style.display='block'">כניסת מנהל</button>
     </div>
-  </div>
 
-  <div class="modal" id="reserveModal">
-    <div class="modal-content">
-      <h3>הזמנת ספר</h3>
-      <input type="text" id="resName" placeholder="שם מלא">
-      <input type="email" id="resEmail" placeholder="אימייל">
-      <input type="tel" id="resPhone" placeholder="טלפון">
-      <input type="hidden" id="resBookIndex">
-      <button onclick="submitReservation()">אישור</button>
-      <button onclick="closeModal()">ביטול</button>
+    <div class="admin-panel" id="adminLogin">
+      <h2>כניסת מנהל</h2>
+      <input type="password" id="adminPassword" placeholder="סיסמה">
+      <button onclick="loginAdmin()">כניסה</button>
+    </div>
+
+    <div class="admin-panel" id="adminPanel">
+      <h2>ניהול ספרים</h2>
+      <input type="text" id="newBookName" placeholder="שם הספר החדש">
+      <button onclick="addBook()">הוסף ספר</button>
+      <div>
+        <h3>רשימת הספרים</h3>
+        <div id="adminBookList"></div>
+      </div>
+    </div>
+
+    <div class="modal" id="reserveModal">
+      <div class="modal-content">
+        <h3>הזמנת ספר</h3>
+        <input type="text" id="resName" placeholder="שם מלא">
+        <input type="email" id="resEmail" placeholder="אימייל">
+        <input type="tel" id="resPhone" placeholder="טלפון">
+        <input type="hidden" id="resBookIndex">
+        <button onclick="submitReservation()">אישור</button>
+        <button onclick="closeModal()">ביטול</button>
+      </div>
     </div>
   </div>
 
