@@ -15,6 +15,7 @@
       min-height: 100vh;
       color: #333;
       padding: 20px; /* הוספה של ריפוד כללי לגוף */
+      position: relative; /* חובה למיקום מוחלט של האלמנט החדש */
     }
     .container {
       background-color: rgba(255, 255, 255, 0.8); /* רקע לבן שקוף מעט */
@@ -279,6 +280,20 @@
     .admin-panel li:last-child {
       border-bottom: none;
     }
+    .copyright-button {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background-color: #555; /* צבע אפור כהה */
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.9em;
+      cursor: default; /* מונע אפקט לחיצה */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      pointer-events: none; /* מונע אינטראקציה של עכבר */
+    }
   </style>
 </head>
 <body>
@@ -320,8 +335,10 @@
     </div>
   </div>
 
+  <button class="copyright-button">הזכויות שמורות לא. כ. תכנות</button>
+
   <script>
-    const passwordHash = atob("MzQyOA==");
+    const passwordHash = atob("MzQyOA=="); // 3428 מוצפן
     let books = JSON.parse(localStorage.getItem('books')) || [];
 
     function saveBooks() {
