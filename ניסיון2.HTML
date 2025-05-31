@@ -1,246 +1,122 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>הזמנות ספרים</title>
+  <meta charset="UTF-8">
+  <title>הוספת ספר / הזמנה</title>
   <style>
     body {
-      font-family: 'Alef', sans-serif;
-      background: linear-gradient(to right, #f0f8ff, #d4ecff);
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #004080;
-    }
-    .book-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
-      max-width: 1000px;
-      margin: auto;
-    }
-    .book {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
       display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      padding: 12px;
-      background: #f9f9f9;
-      border-radius: 10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .reserved {
-      background: #eee;
-      color: #aaa;
-    }
-    input, button {
-      padding: 10px;
-      margin-top: 10px;
-      width: 100%;
-      box-sizing: border-box;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #0077cc;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #005fa3;
-    }
-    .admin-link, .back-link {
-      text-align: center;
-      margin-top: 30px;
-    }
-    .admin-link button, .back-link button {
-      background: none;
-      border: none;
-      color: #0077cc;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .admin-panel {
-      display: none;
-      max-width: 700px;
-      margin: 30px auto;
-      background: #ffffffee;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
 
-    /* Modal */
-    .modal {
-      position: fixed;
-      top: 0; right: 0; bottom: 0; left: 0;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
+    .container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       max-width: 400px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      width: 100%;
     }
-    .modal input {
-      margin: 5px 0;
+
+    h1 {
+      text-align: center;
+      color: #003366;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #004999;
+    }
+
+    #result {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>להזמנות 👇</h1>
+  <div class="container">
+    <h1>הוספת ספר / הזמנה</h1>
+    <label for="bookName">שם הספר</label>
+    <input type="text" id="bookName" placeholder="לדוגמה: מסעות גוליבר" />
 
-  <div class="book-list" id="bookList"></div>
+    <label for="action">סוג הפעולה</label>
+    <select id="action">
+      <option value="add">הוספת ספר</option>
+      <option value="order">הזמנת ספר</option>
+    </select>
 
-  <div class="admin-link">
-    <button onclick="document.getElementById('adminLogin').style.display='block'">כניסת מנהל</button>
-  </div>
-
-  <div class="admin-panel" id="adminLogin">
-    <h2>כניסת מנהל</h2>
-    <input type="password" id="adminPassword" placeholder="סיסמה">
-    <button onclick="loginAdmin()">כניסה</button>
-  </div>
-
-  <div class="admin-panel" id="adminPanel">
-    <h2>ניהול ספרים</h2>
-    <input type="text" id="newBookName" placeholder="שם הספר החדש">
-    <button onclick="addBook()">הוסף ספר</button>
-    <div>
-      <h3>רשימת הספרים</h3>
-      <div id="adminBookList"></div>
-    </div>
-  </div>
-
-  <div class="modal" id="reserveModal">
-    <div class="modal-content">
-      <h3>הזמנת ספר</h3>
-      <input type="text" id="resName" placeholder="שם מלא">
-      <input type="email" id="resEmail" placeholder="אימייל">
-      <input type="tel" id="resPhone" placeholder="טלפון">
-      <input type="hidden" id="resBookIndex">
-      <button onclick="submitReservation()">אישור</button>
-      <button onclick="closeModal()">ביטול</button>
-    </div>
+    <button onclick="sendData()">שלח</button>
+    <p id="result"></p>
   </div>
 
   <script>
-    const passwordHash = atob("MzQyOA=="); // 3428 מוצפן
-    let books = JSON.parse(localStorage.getItem('books')) || [];
+    const WEB_APP_URL = "YOUR_WEB_APP_URL_HERE"; // ← כאן לשים את הכתובת של הצד שרת
 
-    function saveBooks() {
-      localStorage.setItem('books', JSON.stringify(books));
-      renderBooks();
-      renderAdminBooks();
-    }
+    function sendData() {
+      const bookName = document.getElementById('bookName').value.trim();
+      const action = document.getElementById('action').value;
+      const resultElem = document.getElementById('result');
 
-    function renderBooks() {
-      const list = document.getElementById('bookList');
-      list.innerHTML = '';
-      books.forEach((book, i) => {
-        const div = document.createElement('div');
-        div.className = 'book' + (book.reserved ? ' reserved' : '');
-        div.innerHTML = `
-          <span>${book.name}</span>
-          <button onclick="openModal(${i})" ${book.reserved ? 'disabled' : ''}>שמור</button>
-        `;
-        list.appendChild(div);
-      });
-    }
-
-    function openModal(index) {
-      document.getElementById('resBookIndex').value = index;
-      document.getElementById('resName').value = '';
-      document.getElementById('resEmail').value = '';
-      document.getElementById('resPhone').value = '';
-      document.getElementById('reserveModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-      document.getElementById('reserveModal').style.display = 'none';
-    }
-
-    function submitReservation() {
-      const index = document.getElementById('resBookIndex').value;
-      const name = document.getElementById('resName').value.trim();
-      const email = document.getElementById('resEmail').value.trim();
-      const phone = document.getElementById('resPhone').value.trim();
-
-      if (!name || !email.includes('@') || phone.length < 6) {
-        alert('אנא מלא את כל הפרטים בצורה תקינה');
+      if (!bookName) {
+        resultElem.textContent = "אנא הזן שם ספר.";
+        resultElem.style.color = "red";
         return;
       }
 
-      books[index].reserved = `${name} (${email}, ${phone})`;
-      saveBooks();
-      closeModal();
-    }
-
-    function loginAdmin() {
-      const entered = document.getElementById('adminPassword').value;
-      if (entered === passwordHash) {
-        document.getElementById('adminPanel').style.display = 'block';
-        document.getElementById('adminLogin').style.display = 'none';
-        renderAdminBooks();
-      } else {
-        alert('סיסמה שגויה');
-      }
-    }
-
-    function addBook() {
-      const name = document.getElementById('newBookName').value;
-      if (!name) return;
-      books.push({ name, reserved: null });
-      document.getElementById('newBookName').value = '';
-      saveBooks();
-    }
-
-    function renderAdminBooks() {
-      const list = document.getElementById('adminBookList');
-      list.innerHTML = '';
-      books.forEach((book, i) => {
-        const div = document.createElement('div');
-        div.className = 'book';
-        div.innerHTML = `
-          <span>${book.name} ${book.reserved ? '(שמורה ל-' + book.reserved + ')' : ''}</span>
-          <button onclick="toggleAvailability(${i})">${book.reserved ? 'שחרר' : 'שמור'}</button>
-          <button onclick="removeBook(${i})">מחק</button>
-        `;
-        list.appendChild(div);
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify({ bookName, action }),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          resultElem.textContent = "✅ הספר נשמר בהצלחה!";
+          resultElem.style.color = "green";
+        } else {
+          resultElem.textContent = "❌ שגיאה: " + data.message;
+          resultElem.style.color = "red";
+        }
+      })
+      .catch(err => {
+        resultElem.textContent = "❌ שגיאת רשת: " + err.message;
+        resultElem.style.color = "red";
       });
     }
-
-    function toggleAvailability(index) {
-      if (books[index].reserved) {
-        books[index].reserved = null;
-      } else {
-        const name = prompt('הכנס שם:');
-        const email = prompt('הכנס מייל:');
-        const phone = prompt('הכנס טלפון:');
-        if (!name || !email || !phone) return;
-        books[index].reserved = `${name} (${email}, ${phone})`;
-      }
-      saveBooks();
-    }
-
-    function removeBook(index) {
-      if (confirm('האם למחוק את הספר?')) {
-        books.splice(index, 1);
-        saveBooks();
-      }
-    }
-
-    renderBooks();
   </script>
 </body>
 </html>
