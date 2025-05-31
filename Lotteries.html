@@ -1,449 +1,70 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>הזמנות ספרים</title>
+  <title>Lotteries</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
       margin: 0;
-      background: linear-gradient(135deg, #a855f7, #ffffff, #3b82f6); /* סגול, לבן, כחול */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: #333;
-      padding: 20px; /* הוספה של ריפוד כללי לגוף */
-      position: relative; /* חובה למיקום מוחלט של האלמנט החדש */
-    }
-    .container {
-      background-color: rgba(255, 255, 255, 0.8); /* רקע לבן שקוף מעט */
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-      text-align: center;
-      width: 80%;
-      max-width: 600px;
+      padding: 2rem;
     }
     h1 {
-      color: #a855f7; /* סגול */
-      margin-bottom: 30px;
-      font-size: 2.5em;
-      text-shadow: 1px 1px #ddd;
-    }
-    .book-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
-      max-width: 1000px;
-      margin: auto;
-    }
-    .book {
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      padding: 12px;
-      background: #f9f9f9;
-      border-radius: 10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .reserved {
-      background: #eee;
-      color: #aaa;
-    }
-    input, button {
-      padding: 10px;
-      margin-top: 10px;
-      width: 100%;
-      box-sizing: border-box;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #3b82f6; /* כחול */
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-      color: #fff;
-      backdrop-filter: blur(5px);
-    }
-    .admin-link, .back-link {
       text-align: center;
-      margin-top: 30px;
-    }
-    .admin-link button, .back-link button {
-      background: none;
-      border: none;
-      color: #0077cc;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .admin-panel {
-      display: none;
-      max-width: 700px;
-      margin: 30px auto;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      text-align: right; /* יישור לימין כמו בעיצוב השני */
-    }
-
-    /* Modal */
-    .modal {
-      position: fixed;
-      top: 0; right: 0; bottom: 0; left: 0;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
-    }
-    .modal input {
-      margin: 5px 0;
-    }
-
-    /* Additional styles from the second code snippet for consistency */
-    .button {
-      padding: 12px 24px;
-      margin: 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 18px;
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
-      color: #fff;
-      background-color: #3b82f6; /* כחול */
-    }
-    .admin-button {
-      background-color: #a855f7; /* סגול */
-    }
-    .student-button {
-      background-color: #3b82f6; /* כחול */
-    }
-    .login-container {
-      display: none;
-      margin-top: 30px;
-    }
-    .login-container h2 {
-      color: #a855f7; /* סגול */
-      margin-bottom: 20px;
-    }
-    .login-container label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #555;
-    }
-    .login-container input[type="password"] {
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      width: 100%;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
-    .login-container button {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 18px;
-      background-color: #3b82f6; /* כחול */
-      color: white;
-      transition: background-color 0.3s ease;
-    }
-    .login-container button:hover {
-      opacity: 0.8;
-    }
-    .book-list-container {
-      display: none;
-      margin-top: 30px;
-      text-align: right;
-    }
-    .book-list-container h2 {
-      color: #a855f7; /* סגול */
-      margin-bottom: 20px;
-    }
-    .book-list-container ul {
-      list-style: none;
-      padding: 0;
-    }
-    .book-list-container li {
-      margin-bottom: 15px;
-    }
-    .book-link {
-      color: #3b82f6; /* כחול */
-      text-decoration: none;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 1.1em;
-      transition: color 0.3s ease;
-    }
-    .book-link:hover {
-      color: #a855f7; /* סגול */
-    }
-    .registration-form {
-      display: none;
-      background-color: rgba(255, 255, 255, 0.8);
       color: #333;
-      padding: 30px;
-      border-radius: 12px;
-      margin-top: 30px;
-      text-align: right;
     }
-    .registration-form h2 {
-      color: #3b82f6; /* כחול */
-      margin-bottom: 20px;
-    }
-    .registration-form label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #555;
-    }
-    .registration-form input[type="text"],
-    .registration-form input[type="email"],
-    .registration-form input[type="tel"] {
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+    table {
       width: 100%;
-      box-sizing: border-box;
-      font-size: 16px;
+      border-collapse: collapse;
+      margin-top: 2rem;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .registration-form button {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 18px;
-      background-color: #3b82f6; /* כחול */
+    th, td {
+      padding: 1rem;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background: #007bff;
       color: white;
-      margin-top: 20px;
-      transition: background-color 0.3s ease;
-    }
-    .registration-form button:hover {
-      opacity: 0.8;
-    }
-    .success-message {
-      display: none;
-      margin-top: 30px;
-      padding: 20px;
-      background-color: #e0f2f7; /* תכלת בהיר */
-      color: #0d47a1; /* כחול כהה */
-      border: 1px solid #b3e5fc;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 1.1em;
-      font-weight: bold;
-    }
-    .admin-panel {
-      display: none;
-      margin-top: 30px;
-      padding: 30px;
-      background-color: rgba(255, 255, 255, 0.8); /* רקע לבן שקוף מעט */
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      text-align: right;
-    }
-    .admin-panel h2 {
-      color: #a855f7; /* סגול */
-      margin-bottom: 20px;
-    }
-    .admin-panel ul {
-      list-style: none;
-      padding: 0;
-    }
-    .admin-panel li {
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-      font-size: 16px;
-      color: #555;
-    }
-    .admin-panel li:last-child {
-      border-bottom: none;
-    }
-    .copyright-button {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      background-color: #555; /* צבע אפור כהה */
-      color: white;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 5px;
-      font-size: 0.9em;
-      cursor: default; /* מונע אפקט לחיצה */
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      pointer-events: none; /* מונע אינטראקציה של עכבר */
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>להזמנות 👇</h1>
-
-    <div class="book-list" id="bookList"></div>
-
-    <div class="admin-link">
-      <button onclick="document.getElementById('adminLogin').style.display='block'">כניסת מנהל</button>
-    </div>
-
-    <div class="admin-panel" id="adminLogin">
-      <h2>כניסת מנהל</h2>
-      <input type="password" id="adminPassword" placeholder="סיסמה">
-      <button onclick="loginAdmin()">כניסה</button>
-    </div>
-
-    <div class="admin-panel" id="adminPanel">
-      <h2>ניהול ספרים</h2>
-      <input type="text" id="newBookName" placeholder="שם הספר החדש">
-      <button onclick="addBook()">הוסף ספר</button>
-      <div>
-        <h3>רשימת הספרים</h3>
-        <div id="adminBookList"></div>
-      </div>
-    </div>
-
-    <div class="modal" id="reserveModal">
-      <div class="modal-content">
-        <h3>הזמנת ספר</h3>
-        <input type="text" id="resName" placeholder="שם מלא">
-        <input type="email" id="resEmail" placeholder="אימייל">
-        <input type="tel" id="resPhone" placeholder="טלפון">
-        <input type="hidden" id="resBookIndex">
-        <button onclick="submitReservation()">אישור</button>
-        <button onclick="closeModal()">ביטול</button>
-      </div>
-    </div>
-  </div>
-
-  <button class="copyright-button">הזכויות שמורות לא. כ. תכנות</button>
+  <h1>Lottery Results</h1>
+  <table id="lotteryTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script>
-    const passwordHash = atob("MzQyOA=="); // 3428 מוצפן
-    let books = JSON.parse(localStorage.getItem('books')) || [];
+    // נתוני דוגמה מתוך books.json
+    const lotteries = [
+      { name: "Mega Millions", type: "National", date: "2025-05-30" },
+      { name: "Powerball", type: "National", date: "2025-05-29" },
+      { name: "Local Lotto", type: "Regional", date: "2025-05-28" }
+    ];
 
-    function saveBooks() {
-      localStorage.setItem('books', JSON.stringify(books));
-      renderBooks();
-      renderAdminBooks();
-    }
-
-    function renderBooks() {
-      const list = document.getElementById('bookList');
-      list.innerHTML = '';
-      books.forEach((book, i) => {
-        const div = document.createElement('div');
-        div.className = 'book' + (book.reserved ? ' reserved' : '');
-        div.innerHTML = `
-          <span>${book.name}</span>
-          <button onclick="openModal(${i})" ${book.reserved ? 'disabled' : ''}>שמור</button>
-        `;
-        list.appendChild(div);
-      });
-    }
-
-    function openModal(index) {
-      document.getElementById('resBookIndex').value = index;
-      document.getElementById('resName').value = '';
-      document.getElementById('resEmail').value = '';
-      document.getElementById('resPhone').value = '';
-      document.getElementById('reserveModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-      document.getElementById('reserveModal').style.display = 'none';
-    }
-
-    function submitReservation() {
-      const index = document.getElementById('resBookIndex').value;
-      const name = document.getElementById('resName').value.trim();
-      const email = document.getElementById('resEmail').value.trim();
-      const phone = document.getElementById('resPhone').value.trim();
-
-      if (!name || !email.includes('@') || phone.length < 6) {
-        alert('אנא מלא את כל הפרטים בצורה תקינה');
-        return;
-      }
-
-      books[index].reserved = `${name} (${email}, ${phone})`;
-      saveBooks();
-      closeModal();
-    }
-
-    function loginAdmin() {
-      const entered = document.getElementById('adminPassword').value;
-      if (entered === passwordHash) {
-        document.getElementById('adminPanel').style.display = 'block';
-        document.getElementById('adminLogin').style.display = 'none';
-        renderAdminBooks();
-      } else {
-        alert('סיסמה שגויה');
-      }
-    }
-
-    function addBook() {
-      const name = document.getElementById('newBookName').value;
-      if (!name) return;
-      books.push({ name, reserved: null });
-      document.getElementById('newBookName').value = '';
-      saveBooks();
-    }
-
-    function renderAdminBooks() {
-      const list = document.getElementById('adminBookList');
-      list.innerHTML = '';
-      books.forEach((book, i) => {
-        const div = document.createElement('div');
-        div.className = 'book';
-        div.innerHTML = `
-          <span>${book.name} ${book.reserved ? '(שמורה ל-' + book.reserved + ')' : ''}</span>
-          <button onclick="toggleAvailability(${i})">${book.reserved ? 'שחרר' : 'שמור'}</button>
-          <button onclick="removeBook(${i})">מחק</button>
-        `;
-        list.appendChild(div);
-      });
-    }
-
-    function toggleAvailability(index) {
-      if (books[index].reserved) {
-        books[index].reserved = null;
-      } else {
-        const name = prompt('הכנס שם:');
-        const email = prompt('הכנס מייל:');
-        const phone = prompt('הכנס טלפון:');
-        if (!name || !email || !phone) return;
-        books[index].reserved = `${name} (${email}, ${phone})`;
-      }
-      saveBooks();
-    }
-
-    function removeBook(index) {
-      if (confirm('האם למחוק את הספר?')) {
-        books.splice(index, 1);
-        saveBooks();
-      }
-    }
-
-    renderBooks();
+    const tbody = document.querySelector('#lotteryTable tbody');
+    lotteries.forEach(lottery => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${lottery.name}</td>
+        <td>${lottery.type}</td>
+        <td>${lottery.date}</td>
+      `;
+      tbody.appendChild(row);
+    });
   </script>
 </body>
 </html>
+
