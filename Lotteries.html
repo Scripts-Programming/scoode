@@ -1,70 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lotteries</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>האתר בפיתוח</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
+    /* אפקטים כלליים */
+    * {
       margin: 0;
-      padding: 2rem;
+      padding: 0;
+      box-sizing: border-box;
     }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 2rem;
-      background: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    th, td {
-      padding: 1rem;
-      border-bottom: 1px solid #ccc;
-      text-align: left;
-    }
-    th {
-      background: #007bff;
+    body, html {
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: white;
+      overflow: hidden;
+    }
+    /* רקע עם תמונה */
+    body {
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+    }
+    /* שכבת טשטוש כהה מעל הרקע */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1;
+    }
+    /* מיכל הטקסט במרכז */
+    .container {
+      position: relative;
+      z-index: 2;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+    /* הטקסט הגדול */
+    h1 {
+      font-size: 4rem;
+      font-weight: 900;
+      text-shadow: 3px 3px 8px rgba(0,0,0,0.7);
+      max-width: 90vw;
+    }
+    /* טקסט קטן מתחת */
+    p {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      color: #ddd;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+    }
+    /* תגובה רספונסיבית */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      p {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Lottery Results</h1>
-  <table id="lotteryTable">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Date</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <script>
-    // נתוני דוגמה מתוך books.json
-    const lotteries = [
-      { name: "Mega Millions", type: "National", date: "2025-05-30" },
-      { name: "Powerball", type: "National", date: "2025-05-29" },
-      { name: "Local Lotto", type: "Regional", date: "2025-05-28" }
-    ];
-
-    const tbody = document.querySelector('#lotteryTable tbody');
-    lotteries.forEach(lottery => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${lottery.name}</td>
-        <td>${lottery.type}</td>
-        <td>${lottery.date}</td>
-      `;
-      tbody.appendChild(row);
-    });
-  </script>
+  <div class="container">
+    <div>
+      <h1>האתר בפיתוח מצטערים...</h1>
+      <p>אנא חזרו מאוחר יותר</p>
+    </div>
+  </div>
 </body>
 </html>
-
