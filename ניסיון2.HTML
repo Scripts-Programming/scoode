@@ -131,7 +131,6 @@
         cardsV2: [{
           cardId: 'messageCard',
           card: {
-            header: { title: 'הודעה חדשה', subtitle: new Date().toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' }) },
             sections: [
               { widgets: [{ textParagraph: { text: message } }] },
               ...(imageUrl ? [{ widgets: [{ image: { imageUrl } }] }] : [])
