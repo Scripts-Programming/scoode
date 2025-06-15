@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שליחת הודעה ל-Webhook</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Alef:wght@400;700&family=Noto+Sans+Hebrew:wght@400;700&display=swap');
+    body {
+      font-family: 'Alef', sans-serif;
+      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      overflow: hidden;
+    }
+    .container {
+      background: #ffffff;
+      padding: 3rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 38rem;
+      width: 90%;
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+    .form-title {
+      color: #1f2937;
+      font-weight: 700;
+      text-align: center;
+      font-size: 2.25rem;
+      margin-bottom: 2rem;
+      transition: color 0.3s ease;
+    }
+    .container:hover .form-title {
+      color: #2563eb;
+    }
+    .input-field {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+    .input-field input,
+    .input-field textarea {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid #e5e7eb;
+      background: #f9fafb;
+      border-radius: 1rem;
+      font-size: 1rem;
+      color: #1f2937;
+      font-family: 'Alef', sans-serif;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+    .input-field textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    .input-field input:focus,
+    .input-field textarea:focus {
+      border-color: #2563eb;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      outline: none;
+    }
+    .input-field label {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      font-family: 'Alef', sans-serif;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      background: transparent;
+      padding: 0 0.3rem;
+    }
+    .input-field input:focus + label,
+    .input-field input:not(:placeholder-shown) + label,
+    .input-field textarea:focus + label,
+    .input-field textarea:not(:placeholder-shown) + label {
+      top: -0.75rem;
+      right: 0.75rem;
+      font-size: 0.75rem;
+      color: #2563eb;
+      background: #ffffff;
+      padding: 0 0.3rem;
+    }
+    .preview-image {
+      max-width: 180px;
+      max-height: 180px;
+      border-radius: 0.75rem;
+      margin-top: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    .preview-image.loaded {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .error {
+      color: #dc2626;
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+      display: none;
+      text-align: right;
+      font-family: 'Noto Sans Hebrew', sans-serif;
+    }
+    .error.show {
+      display: block;
+    }
+    .success {
+      color: #16a34a;
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 1.5rem;
+      font-family: 'Noto Sans Hebrew', sans-serif;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: #2563eb;
+      color: #ffffff;
+      font-weight: 700;
+      border-radius: 1rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Alef', sans-serif;
+    }
+    .submit-btn:hover {
+      background: #1d4ed8;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+    }
+    .submit-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
+    }
+    .info-text {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 0.5rem;
+      text-align: right;
+      font-family: 'Noto Sans Hebrew', sans-serif;
+    }
+    @media (max-width: 640px) {
+      .container {
+        padding: 2rem;
+        width: 95%;
+      }
+      .form-title {
+        font-size: 1.875rem;
+      }
+      .preview-image {
+        max-width: 140px;
+        max-height: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particles" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -3;"></canvas>
+  <div class="container">
+    <h1 class="form-title">שלח הודעה ל-Webhook שלך!</h1>
+    
+    <div class="input-field">
+      <textarea id="message" placeholder=" "></textarea>
+      <label for="message">הודעה (חובה)</label>
+      <p id="message-error" class="error">אנא הזן הודעה</p>
+    </div>
+
+    <div class="input-field">
+      <input type="url" id="image-url" placeholder=" " />
+      <label for="image-url">כתובת URL של תמונה (אופציונלי)</label>
+      <p id="image-url-error" class="error">כתובת URL לא תקינה (חייבת להסתיים ב-jpg, jpeg, png או gif)</p>
+      <p class="info-text">הזנת כתובת תמונה תציג תצוגה מקדימה ותבקש אישור לפני שליחה</p>
+      <div id="image-preview"></div>
+    </div>
+
+    <div class="input-field">
+      <input type="url" id="webhook-url" placeholder=" " />
+      <label for="webhook-url">כתובת Webhook (חובה)</label>
+      <p id="webhook-url-error" class="error">אנא הזן כתובת Webhook תקינה</p>
+    </div>
+
+    <button onclick="handleSubmit()" class="submit-btn">שלח עכשיו!</button>
+    <p id="result" class="success"></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    // Particles.js configuration (subtle effect)
+    particlesJS('particles', {
+      particles: {
+        number: { value: 50 },
+        color: { value: ['#bfdbfe', '#dbeafe'] },
+        shape: { type: 'circle' },
+        opacity: { value: 0.3 },
+        size: { value: 2 },
+        line_linked: { enable: false },
+        move: { speed: 3 }
+      },
+      interactivity: {
+        events: { onhover: { enable: true, mode: 'bubble', bubble: { distance: 200, size: 4, duration: 2 } } }
+      }
+    });
+
+    // Preview image on URL input
+    document.getElementById('image-url').addEventListener('input', function() {
+      const url = this.value.trim();
+      const previewContainer = document.getElementById('image-preview');
+      previewContainer.innerHTML = '';
+      if (url && isValidUrl(url)) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = 'תצוגה מקדימה';
+        img.className = 'preview-image';
+        img.onload = () => img.classList.add('loaded');
+        img.onerror = () => {
+          previewContainer.innerHTML = '<p class="error show">לא ניתן לטעון את התמונה</p>';
+        };
+        previewContainer.appendChild(img);
+      }
+    });
+
+    function handleSubmit() {
+      const message = document.getElementById('message').value.trim();
+      const imageUrl = document.getElementById('image-url').value.trim();
+      const webhookUrl = document.getElementById('webhook-url').value.trim();
+      const result = document.getElementById('result');
+      const messageError = document.getElementById('message-error');
+      const imageUrlError = document.getElementById('image-url-error');
+      const webhookUrlError = document.getElementById('webhook-url-error');
+
+      // Reset errors
+      messageError.classList.remove('show');
+      imageUrlError.classList.remove('show');
+      webhookUrlError.classList.remove('show');
+      result.textContent = '';
+
+      // Validate inputs
+      let isValid = true;
+      if (!message) {
+        messageError.classList.add('show');
+        isValid = false;
+      }
+      if (imageUrl && !isValidUrl(imageUrl)) {
+        imageUrlError.classList.add('show');
+        isValid = false;
+      }
+      if (!webhookUrl || !isValidWebhookUrl(webhookUrl)) {
+        webhookUrlError.classList.add('show');
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      // Confirm image submission
+      if (imageUrl) {
+        if (!confirm('האם אתה מאשר לשלוח את התמונה עם הכתובת שנבחרה?')) {
+          result.textContent = 'שליחה בוטלה';
+          result.classList.remove('success');
+          result.classList.add('error');
+          return;
+        }
+      }
+
+      // Send message with loading spinner
+      result.innerHTML = '<svg class="animate-spin h-5 w-5 inline-block mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"></path></svg>שולח הודעה...';
+      sendMessage(message, imageUrl, webhookUrl);
+    }
+
+    function isValidUrl(url) {
+      try {
+        new URL(url);
+        return /\.(jpg|jpeg|png|gif)$/i.test(url);
+      } catch {
+        return false;
+      }
+    }
+
+    function isValidWebhookUrl(url) {
+      try {
+        new URL(url);
+        return url.startsWith('https://');
+      } catch {
+        return false;
+      }
+    }
+
+    function sendMessage(message, imageUrl, webhookUrl) {
+      const result = document.getElementById('result');
+      const payload = {
+        cardsV2: [{
+          cardId: 'messageCard',
+          card: {
+            sections: [
+              { widgets: [{ textParagraph: { text: message } }] },
+              ...(imageUrl ? [{ widgets: [{ image: { imageUrl } }] }] : [])
+            ]
+          }
+        }]
+      };
+
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        if (!response.ok) throw new Error(`שגיאה: ${response.status} - ${response.statusText}`);
+        result.textContent = 'ההודעה נשלחה בהצלחה!';
+        result.classList.remove('error');
+        result.classList.add('success');
+        clearForm();
+      })
+      .catch(error => {
+        result.textContent = `שגיאה בשליחה: ${error.message}`;
+        result.classList.remove('success');
+        result.classList.add('error');
+      });
+    }
+
+    function clearForm() {
+      document.getElementById('message').value = '';
+      document.getElementById('image-url').value = '';
+      document.getElementById('webhook-url').value = '';
+      document.getElementById('image-preview').innerHTML = '';
+    }
+  </script>
+</body>
+</html>
