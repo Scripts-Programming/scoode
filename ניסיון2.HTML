@@ -84,39 +84,442 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwNSe3pXkIosEwRUG3xGvlRc3_dii6wfwTNofokN3k_n3-7vAcamD8DxK0Q2LJoZrQk/exec"; // ← כאן לשים את הכתובת של הצד שרת
+const CACHE = CacheService.getScriptCache();
+const FOLDER_ID = '1J-80Xhpth2_BhM8Vjdxe0dfHG_ApKre7';
 
-    function sendData() {
-      const bookName = document.getElementById('bookName').value.trim();
-      const action = document.getElementById('action').value;
-      const resultElem = document.getElementById('result');
+const emails = [
+    { email: "admin@miil-niol.top", name: "ניהול ראשי" },
+  { email: "admin@miil-niol.top", name: "אלי כהן" },
+  { email: "mtzix@miil-niol.top", name: "מצאתי אקספרס" }, 
+  { email: "abctodros@hamakom.ovh", name: "יוסי" },
+  { email: "muhk@miil-niol.top", name: "ניהול קבוצות" },
+    { email: "script-coode@hamakom.ovh", name: "סקריפטים ותכנות" },
+  { email: "76as@miil-niol.top", name: "החדשני שבחדשות" },
+];
 
-      if (!bookName) {
-        resultElem.textContent = "אנא הזן שם ספר.";
-        resultElem.style.color = "red";
-        return;
+const email = Session.getActiveUser().getEmail(); 
+const props = PropertiesService.getScriptProperties(); // שימוש ב-Script Properties לשמירת מצב משותף
+
+const TELEGRAM_CHANNELS = [
+  { url: "https://t.me/s/divuhim1234"}, // דיווחים חמים מהשטח
+  { url: "https://t.me/s/PikudHaOref_all"}, // פיקוד העורף - כל ההודעות
+  { url: "https://t.me/s/abualiexpress"}, // אבו עלי אקספרס
+  { url: "https://t.me/s/amitsegal"}, // עמית סגל
+  { url: "https://t.me/s/merkaz"}, // מרכז החדשות
+  { url: "https://t.me/s/lieldaphna"}, // ליאל דפנה
+  { url: "https://t.me/s/News_cabinet_news"}, // חדשות הממשלה
+  { url: "https://t.me/s/ynetalerts"}, // ynet - עדכונים
+  { url: "https://t.me/s/ramreports"}, // רם ברנדס - דיווחים
+  { url: "https://t.me/s/news00009"}, // חדשות 00009
+  { url: "https://t.me/s/yedidya_epshteyn"}, // ידידיה אפשטיין
+  { url: "https://t.me/s/HallelBittonRosen"}, // הלל ביטון רוזן
+  { url: "https://t.me/s/yediyot_bnei_brak"}, // ידיעות בני ברק
+  { url: "https://t.me/s/kolahadasot"}, // קול החדשות
+  { url: "https://t.me/s/yinonews"}, // ידיעות און ליין
+  { url: "https://t.me/s/Newss0nline"}, // חדשות און ליין
+  { url: "https://t.me/s/pkpoi"}, // פוקוס פוינט
+  { url: "https://t.me/s/Now14israel"}, // עכשיו 14
+  { url: "https://t.me/s/firstreportsnews"}, // דיווחים ראשוניים
+  { url: "https://t.me/s/TheBigBadShadow"}, // הצל
+  { url: "https://t.me/s/tzviye"}, // צבי יחזקאלי
+  { url: "https://t.me/s/NTD_Hebrew"}, // NTD עברית
+  { url: "https://t.me/s/bnetanyahu"}, // בנימין נתניהו
+  { url: "https://t.me/s/YLapid"}, // יאיר לפיד
+  { url: "https://t.me/s/yarivlevin"}, // יריב לוין
+  { url: "https://t.me/s/ayeletshaked1"}, // איילת שקד
+  { url: "https://t.me/s/yairsherkinews"}, // יאיר שרקי
+  { url: "https://t.me/s/mivzakibitahon"}, // מבזקי ביטחון - ישראל היום
+  { url: "https://t.me/s/N12_News"}, // חדשות 12
+  { url: "https://t.me/s/behadrei_harebim_bhol"}, // חדרי חרדים
+  { url: "https://t.me/s/idf_telegram"}, // צבא ההגנה לישראל
+  { url: "https://t.me/s/JewishFist"}, // האגרוף היהודי
+  { url: "https://t.me/s/arabworld301news"}, // העולם הערבי - חדשות
+  { url: "https://t.me/s/israel_news_telegram"}, // חדשות ישראל
+  { url: "https://t.me/s/GLOBAL_Telegram_MOKED"}, // מוקד החדשות - גלובל
+  { url: "https://t.me/s/knessettv"}, // ערוץ הכנסת
+  { url: "https://t.me/s/hadasot10"}, // חדשות 10
+  { url: "https://t.me/s/New_security8200"}, // חדשות ביטחון 8200
+  { url: "https://t.me/s/hazfon1"}, // חדשות הצפון 1
+  { url: "https://t.me/s/Yotamzimritelegram"}, // יותם זמרי
+  { url: "https://t.me/s/elisha_yered"}, // אלישע ירד
+  { url: "https://t.me/s/filbers"}, // פילבר
+  { url: "https://t.me/s/amirbohbot"}, // אמיר בוחבוט
+  { url: "https://t.me/s/realelchangr"}, // אלחנן גרונר
+  { url: "https://t.me/s/FidYamin"}, // פיד ימין
+  { url: "https://t.me/s/tamirmorag14"}, // תמיר מורג
+  { url: "https://t.me/bengvir"}, // איתמר בן גביר
+  { url: "https://t.me/s/ZakaHQ"}, // זק"א
+  { url: "https://t.me/s/mdaisrael"}, // מגן דוד אדום
+  { url: "https://t.me/s/uh1221"}, // איחוד הצלה
+  { url: "https://t.me/s/techisrael"}, // טק ישראל
+  { url: "https://t.me/s/tzap1"} // צאפ מגזין
+];
+const GOOGLE_CHAT_WEBHOOK_URL = "https://chat.googleapis.com/v1/spaces/AAQA5xuwKTY/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=cl5AwLRkDdQlMmRccVnwoIfJjfEFziZ2GygGrt7hXZg";
+const DELAY_BETWEEN_MESSAGES_MS = 1000; // הגדרתי כ-1000ms, ניתן להגדיל אם עדיין נתקלים בבעיות מכסה.
+
+
+/**
+ * פונקציה ראשית הבודקת הודעות חדשות בערוצי טלגרם.
+ */
+function checkForNewMessages() {
+  // אם התור לא עבר למשתמש הנוכחי, עצור את הפונקציה
+  if (props.getProperty("טריגר") && props.getProperty("טריגר") !== email) {
+    console.log(`התור אינו שלי. משתמש נוכחי: ${email}, תור אצל: ${props.getProperty("טריגר")}`);
+    return;
+  }
+
+  TELEGRAM_CHANNELS.forEach(channel => {
+    const lastMessageId = PropertiesService.getScriptProperties().getProperty(`lastMessageId_${channel.url}`) || "0";
+    
+    let response;
+    try {
+      response = UrlFetchApp.fetch(channel.url, { muteHttpExceptions: true });
+    } catch (e) {
+      console.error(`שגיאה ב-UrlFetchApp.fetch עבור: ${channel.url} - ${e.message}`);
+      // בדיקה כללית לשגיאות HTTP כולל 429
+      if (e.message.includes("returned code 429")) {
+        console.error(`שגיאת מכסה (429) בעת שליפת ערוץ: ${channel.url}. מנסה להחליף משתמש.`);
+        switchUser(`שגיאת מכסה בשליפת טלגרם: ${e.message}`);
+        return; // עצור את הריצה הנוכחית עבור הערוץ הזה
       }
-
-      fetch(WEB_APP_URL, {
-        method: 'POST',
-        body: JSON.stringify({ bookName, action }),
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "success") {
-          resultElem.textContent = "✅ הספר נשמר בהצלחה!";
-          resultElem.style.color = "green";
-        } else {
-          resultElem.textContent = "❌ שגיאה: " + data.message;
-          resultElem.style.color = "red";
-        }
-      })
-      .catch(err => {
-        resultElem.textContent = "❌ שגיאת רשת: " + err.message;
-        resultElem.style.color = "red";
-      });
+      return;
     }
+
+    if (response.getResponseCode() === 429) {
+      console.error(`שגיאת מכסה (429) עבור ערוץ: ${channel.url}. מנסה להחליף משתמש.`);
+      switchUser(`שגיאת מכסה בשליפת טלגרם: ${response.getContentText()}`);
+      return; // עצור את הריצה הנוכחית עבור הערוץ הזה
+    }
+
+    if (response.getResponseCode() !== 200) {
+      console.error(`שגיאה בשליפת דף הטלגרם: ${channel.url} - קוד תגובה: ${response.getResponseCode()}`);
+      return;
+    }
+
+    const html = response.getContentText();
+    const channelInfo = getChannelInfo(html);
+    const messages = parseMessagesFromHtml(html);
+    let newLastMessageId = parseInt(lastMessageId);
+
+    messages.forEach(message => {
+      if (message.id > newLastMessageId) {
+        if (message.videoUrl) {
+          message.videoUrl = uploadVideoToDrive(message.videoUrl);
+        }
+        
+        // ניסיון שליחה לגוגל צ'אט עם טיפול בשגיאת מכסה
+        try {
+          sendCardToGoogleChat(message, channelInfo);
+        } catch (e) {
+          if (e.message.includes("returned code 429")) {
+            console.error(`שגיאת מכסה (429) בעת שליחה לגוגל צ'אט עבור הודעה ${message.id}. מנסה להחליף משתמש: ${e.message}`);
+            switchUser(`שגיאת מכסה בגוגל צ'אט: ${e.message}`);
+            return; // עצור את הלולאה הנוכחית (forEach) כדי לא לנסות לשלוח עוד הודעות
+          } else {
+            console.error(`שגיאה אחרת בשליחה לגוגל צ'אט: ${e.message}`);
+            // ניתן להוסיף כאן טיפול נוסף לשגיאות שאינן 429
+            return;
+          }
+        }
+        newLastMessageId = Math.max(newLastMessageId, message.id);
+        Utilities.sleep(DELAY_BETWEEN_MESSAGES_MS);
+      }
+    });
+
+    if (newLastMessageId > parseInt(lastMessageId)) {
+      PropertiesService.getScriptProperties().setProperty(`lastMessageId_${channel.url}`, newLastMessageId.toString());
+    }
+  });
+}
+
+/**
+ * מעלה קובץ וידאו מכתובת אתר ל-Google Drive.
+ * @param {string} url - כתובת ה-URL של קובץ הוידאו.
+ * @returns {string|null} - כתובת ה-URL של הקובץ ב-Drive, או null במקרה של שגיאה.
+ */
+function uploadVideoToDrive(url) {
+  try {
+    Utilities.sleep(5000); // המתנה לפני הורדת וידאו
+    const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    if (response.getResponseCode() !== 200) {
+      console.error(`שגיאה בהורדת הסרטון: ${url} - קוד תגובה: ${response.getResponseCode()}`);
+      return null;
+    }
+    const blob = response.getBlob();
+    const folder = DriveApp.getFolderById(FOLDER_ID);
+    const files = folder.getFilesByName("החדשני שבחדשות");
+    let count = 1;
+    while (files.hasNext()) {
+      files.next();
+      count++;
+    }
+    const fileName = `החדשני שבחדשות ${count}.mp4`;
+    const file = folder.createFile(blob.setName(fileName));
+    return file.getUrl();
+  } catch (error) {
+    console.error("שגיאה בהעלאת הסרטון לדרייב: ", error.message);
+    return null;
+  }
+}
+
+/**
+ * מחלץ מידע על הערוץ מתוך קוד ה-HTML.
+ * @param {string} html - קוד ה-HTML של דף הערוץ.
+ * @returns {object} - אובייקט המכיל את שם הערוץ ותמונת הפרופיל שלו.
+ */
+function getChannelInfo(html) {
+  const nameMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
+  const imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
+  return {
+    name: nameMatch ? nameMatch[1] : "Unknown Channel",
+    imageUrl: imageMatch ? imageMatch[1] : ""
+  };
+}
+
+/**
+ * מנתח הודעות מתוך קוד ה-HTML של דף הערוץ.
+ * @param {string} html - קוד ה-HTML של דף הערוץ.
+ * @returns {Array<object>} - מערך של אובייקטים, כל אחד מייצג הודעה.
+ */
+function parseMessagesFromHtml(html) {
+  const messages = [];
+  const messageBlocks = html.match(/<div class="tgme_widget_message_wrap js-widget_message_wrap"[\s\S]*?<\/div><\/div>/g) || [];
+  messageBlocks.forEach(block => {
+    const idMatch = block.match(/data-post="[^"]*?\/(\d+)"/);
+    if (!idMatch) return;
+    const messageId = parseInt(idMatch[1]);
+    const textMatch = block.match(/<div class="tgme_widget_message_text js-message_text"[^>]*>([\s\S]*?)<\/div>/);
+    let text = textMatch ? cleanText(textMatch[1]) : "";
+    text = text.replace(/https:\/\/drive\.google\.com\/file\/d\/([^\/]+)\/view\?usp=[^&]+/g, function(match, fileId) {
+      return `https://drive.google.com/file/d/${fileId}/view?usp=drivesdk`;
+    });
+    text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1">$1</a>'); // הופך לינקים ללחיצים
+    const imageMatch = block.match(/background-image:url\(['"]?([^'")]+)['"]?\)/);
+    const imageUrl = imageMatch ? imageMatch[1] : "";
+    const videoMatch = block.match(/<video[^>]+src="([^"]+)"/);
+    const videoUrl = videoMatch ? videoMatch[1] : "";
+    const timeMatch = block.match(/<time datetime="([^"]+)"/);
+    const timestamp = timeMatch ? new Date(timeMatch[1]) : new Date();
+    messages.push({
+      id: messageId,
+      text: text,
+      imageUrl: imageUrl,
+      videoUrl: videoUrl,
+      timestamp: timestamp.toISOString()
+    });
+  });
+  return messages.sort((a, b) => a.id - b.id);
+}
+
+/**
+ * מנקה טקסט מהודעות טלגרם, מסיר תגי HTML וביטויים לא רצויים.
+ * @param {string} text - הטקסט המקורי.
+ * @returns {string} - הטקסט הנקי.
+ */
+function cleanText(text) {
+  return text
+    .replace(/<br\s*\/?>/g, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/https?:\/\/chat\.whatsapp\.com\/[^\s]+/g, '')
+    .replace(/https?:\/\/wa\.link\/[^\s]+/g, '')
+    .replace(/\s*להצטרפות בוואטסאפ:\s*\n?/g, '')
+    .replace(/\s*בסטטוס:\s*\n?/g, '')
+    .replace(/https?:\/\/t\.me\/[^\s]+/g, '')
+    .replace(/https?:\/\/telegram\.me\/[^\s]+/g, '')
+    .replace(/\s*הצטרפו לערוץ הטלגרם שלנו:\s*\n?/g, '')
+    // ההחלפות החדשות שביקשת:
+    .replace(/פיד ימין - The Right Way בטלגרם:\s*[^\s]*/g, '')
+    .replace(/פיד ימין - The Right Way בוואטסאפ:\s*[^\s]*/g, '')
+    .replace(/לשיתוף בWhatsApp 💬./g, '')
+    // סוף ההחלפות החדשות
+    .replace(/https?:\/\/did\.li\/FidYamin/g, '')
+    .replace(/עקבו אחרי 'חדשות אונליין ללא צנזורה' בכל הפלטפורמות: אינסטגרם \| טיקטוק \| טלגרם/g, '')
+    .replace(/ללא צנזורה חדשות ישראל בטלגרם: [^\s]*/g, '')
+    .replace(/לקבוצת הוואטסאפ: [^\s]*/g, '')
+    .trim();
+}
+
+/**
+ * שולח הודעה מעוצבת ככרטיס ל-Google Chat.
+ * @param {object} message - אובייקט ההודעה.
+ * @param {object} channelInfo - מידע על ערוץ הטלגרם.
+ */
+function sendCardToGoogleChat(message, channelInfo) {
+  const formattedDate = new Date(message.timestamp).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" });
+  const sections = [];
+
+  if (message.text.trim()) {
+    sections.push({ "widgets": [{ "textParagraph": { "text": message.text } }] });
+  }
+  if (message.imageUrl) {
+    sections.push({ "widgets": [{ "image": { "imageUrl": message.imageUrl } }] });
+  }
+  if (message.videoUrl) {
+    sections.push({ "widgets": [{ "textParagraph": { "text": `📹 <a href='${message.videoUrl}'>לחץ כאן לצפיה בסרטון</a>` } }] });
+  }
+
+  if (sections.length === 0) return; // אל תשלח כרטיס ריק
+
+  const card = {
+    "cardsV2": [{
+      "cardId": "telegramMessage",
+      "card": {
+        "header": {
+          "title": channelInfo.name,
+          "subtitle": formattedDate,
+          "imageUrl": channelInfo.imageUrl,
+          "imageType": "CIRCLE"
+        },
+        "sections": sections
+      }
+    }]
+  };
+
+  UrlFetchApp.fetch(GOOGLE_CHAT_WEBHOOK_URL, {
+    "method": "post",
+    "contentType": "application/json",
+    "payload": JSON.stringify(card)
+  });
+}
+
+/**
+ * פונקציה לשליחת טקסט פשוט לצ'אט (לצרכי התראה/לוגינג של החלפת משתמשים).
+ * נדרשת הגדרת GOOGLE_CHAT_WEBHOOK_URL.
+ * @param {string} text - הטקסט לשליחה.
+ * @param {string} spaceUrl - כתובת ה-webhook של המרחב בצ'אט.
+ */
+function sendTextToChat(text, spaceUrl) {
+  const payload = JSON.stringify({ "text": text });
+  try {
+    UrlFetchApp.fetch(spaceUrl, {
+      method: 'post',
+      contentType: 'application/json',
+      payload: payload,
+      muteHttpExceptions: true
+    });
+  } catch (e) {
+    console.error(`שגיאה בשליחת התראת טקסט לצ'אט: ${e.message}`);
+  }
+}
+
+/**
+ * פונקציה להחלפת המשתמש בעת שגיאת מכסת שימוש.
+ * @param {string} error - שגיאת השליחה שגרמה להחלפה.
+ */
+function switchUser(error) {
+  // קבל את מספר המשתמש הבא ברשימה
+  const currentUserIndex = emails.findIndex(e => e.email === email);
+  if (currentUserIndex === -1) {
+    console.error(`המייל ${email} לא נמצא ברשימת המשתמשים. לא ניתן להחליף משתמש.`);
+    sendTextToChat(`שגיאת הגדרה: המייל ${email} לא נמצא ברשימת המשתמשים.`, GOOGLE_CHAT_WEBHOOK_URL);
+    return;
+  }
+
+  const nextUserIndex = (currentUserIndex + 1) % emails.length;
+  // קבל את כתובת המייל של המשתמש הבא
+  const nextEmail = emails[nextUserIndex].email;
+  // קבל את השם המוצג של המשתמש הבא
+  const nextName = emails[nextUserIndex].name;
+
+  // מחיקת הטריגר לשליחת ההודעות עבור המשתמש הנוכחי
+  ScriptApp.getProjectTriggers().forEach(trigger => {
+    if (trigger.getHandlerFunction() === "checkForNewMessages") {
+      ScriptApp.deleteTrigger(trigger);
+      console.log(`טריגר 'checkForNewMessages' נמחק עבור ${email}.`);
+    }
+  });
+
+  // שמור ב-PropertiesService של הפרויקט הנוכחי את המייל של המשתמש הבא בתור
+  props.setProperty("טריגר", nextEmail);
+  console.log(`העברתי את התור למשתמש הבא: ${nextName} (${nextEmail}).`);
+
+  // וודא שיש טריגר יחיד לפונקציית בדיקת התור
+  ensureSingleCheckTrigger();
+  
+  // מעדכן בצ'אט ניסיון על העברת התור (הודעה כללית לכל המשתתפים)
+  sendTextToChat(`שגיאת שליחה: ${error}\nמעביר את התפקיד ל**${nextName}** (${nextEmail}).`, GOOGLE_CHAT_WEBHOOK_URL);
+}
+
+/**
+ * פונקציה לבדיקת הטריגרים של הקוד וקבלת התור.
+ * מופעלת באמצעות טריגר זמן תקופתי.
+ */
+function checkTriggers() {
+  // אם מאפיין "טריגר" של הקוד מוגדר לכתובת המייל שלי
+  if (props.getProperty("טריגר") === email) {
+    console.log(`התור שלי! ${email} - מתחיל לטפל.`);
+    
+    // מחק את טריגר ה-checkTriggers הנוכחי
+    ScriptApp.getProjectTriggers().forEach(trigger => {
+      if (trigger.getHandlerFunction() === "checkTriggers") {
+        ScriptApp.deleteTrigger(trigger);
+        console.log(`טריגר 'checkTriggers' נמחק עבור ${email}.`);
+      }
+    });
+
+    // צור טריגר חדש לשליחת ההודעות (checkForNewMessages)
+    // וודא שזה מוגדר לפי צורך, לדוגמה כל דקה.
+    ScriptApp.newTrigger("checkForNewMessages").timeBased().everyMinutes(1).create();
+    console.log(`טריגר חדש 'checkForNewMessages' נוצר עבור ${email}.`);
+    
+    // וודא שהמאפיין "טריגר" עדיין מוגדר למייל הנוכחי
+    props.setProperty("טריגר", email);
+    
+    // הכרז על קבלת התור בצ'אט
+    sendTextToChat(`**${emails.find(e => e.email === email).name}** קיבלתי את התור, מתחיל את העבודה!`, GOOGLE_CHAT_WEBHOOK_URL);
+  } else {
+    console.log(`עדיין לא תורי. משתמש נוכחי: ${email}, תור אצל: ${props.getProperty("טריגר")}`);
+  }
+}
+
+/**
+ * פונקציה שמנקה טריגרים כפולים של "checkTriggers" ומשאירה רק אחד.
+ * רצוי להריץ אותה פעם אחת ידנית או להוסיף אותה לפונקציית התקנה ראשונית.
+ */
+function ensureSingleCheckTrigger() {
+  let checkTriggerCount = 0;
+  
+  ScriptApp.getProjectTriggers().forEach(trigger => {
+    if (trigger.getHandlerFunction() === "checkTriggers") {
+      checkTriggerCount++;
+      if (checkTriggerCount > 1) {
+        ScriptApp.deleteTrigger(trigger); // מוחק טריגרים נוספים
+        console.log(`טריגר כפול 'checkTriggers' נמחק.`);
+      }
+    }
+  });
+
+  // אם אין בכלל טריגר checkTriggers, צור אחד
+  if (checkTriggerCount === 0) {
+    ScriptApp.newTrigger("checkTriggers").timeBased().everyMinutes(5).create();
+    console.log(`נוצר טריגר ראשוני ל-'checkTriggers'.`);
+  }
+}
+
+/**
+ * פונקציה להפעלה ראשונית של הסקריפט לכל משתמש.
+ * יש להריץ אותה פעם אחת ידנית לאחר העתקת הסקריפט.
+ */
+function setupInitialTrigger() {
+  // וודא שהטריגר הראשוני לשליחת הודעות יופעל רק אם זה המשתמש הראשון בתור
+  if (!props.getProperty("טריגר")) { // אם אף אחד לא מוגדר כרגע
+    props.setProperty("טריגר", emails[0].email); // הגדר את הראשון ברשימה כפעיל
+    if (emails[0].email === email) { // אם אני המשתמש הראשון
+      ScriptApp.newTrigger("checkForNewMessages").timeBased().everyMinutes(1).create();
+      console.log(`הגדרתי טריגר ראשוני 'checkForNewMessages' עבור ${email} (המשתמש הראשון).`);
+    } else {
+      console.log(`הגדרתי את המשתמש הראשון (${emails[0].email}) כפעיל. עותק זה ימתין לתורו.`);
+    }
+  }
+
+  // וודא שקיים טריגר יחיד לבדיקת התור בכל עותק סקריפט
+  ensureSingleCheckTrigger();
+  console.log(`הגדרת טריגרים ראשונית הסתיימה עבור: ${email}`);
+}
   </script>
 </body>
 </html>
