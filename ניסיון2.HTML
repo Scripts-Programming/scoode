@@ -2,524 +2,168 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>הוספת ספר / הזמנה</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שליחת הודעה ותמונה ל-Webhook</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0e7ff, #c3dafe);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
       margin: 0;
     }
-
     .container {
-      background: #ffffff;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      max-width: 28rem;
       width: 100%;
     }
-
-    h1 {
-      text-align: center;
-      color: #003366;
-      margin-bottom: 20px;
+    .error {
+      color: #dc2626;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
     }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      color: #333;
-    }
-
-    input[type="text"], select {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    button {
-      width: 100%;
-      background-color: #0066cc;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #004999;
-    }
-
-    #result {
-      margin-top: 15px;
-      text-align: center;
-      font-weight: bold;
+    .success {
+      color: #15803d;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>הוספת ספר / הזמנה</h1>
-    <label for="bookName">שם הספר</label>
-    <input type="text" id="bookName" placeholder="לדוגמה: מסעות גוליבר" />
+    <h1 class="text-2xl font-bold text-center text-indigo-900 mb-6">שליחת הודעה ותמונה ל-Webhook</h1>
+    
+    <div class="mb-4">
+      <label for="message" class="block text-sm font-medium text-gray-700 mb-1">הודעה</label>
+      <textarea id="message" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="הזן את ההודעה שלך כאן"></textarea>
+      <p id="message-error" class="error hidden">אנא הזן הודעה</p>
+    </div>
 
-    <label for="action">סוג הפעולה</label>
-    <select id="action">
-      <option value="add">הוספת ספר</option>
-      <option value="order">הזמנת ספר</option>
-    </select>
+    <div class="mb-4">
+      <label for="image-url" class="block text-sm font-medium text-gray-700 mb-1">כתובת URL של תמונה (אופציונלי)</label>
+      <input type="url" id="image-url" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="לדוגמה: https://example.com/image.jpg" />
+      <p id="image-url-error" class="error hidden"></p>
+      <p id="image-info" class="text-sm text-gray-500 mt-1">הזנת כתובת תמונה תבקש אישור לפני שליחה</p>
+    </div>
 
-    <button onclick="sendData()">שלח</button>
-    <p id="result"></p>
+    <div class="mb-6">
+      <label for="password" class="block text-sm font-medium text-gray-700 mb-1">סיסמה</label>
+      <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="הזן סיסמה" />
+      <p id="password-error" class="error hidden">אנא הזן סיסמה נכונה</p>
+    </div>
+
+    <button onclick="handleSubmit()" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-200">שלח</button>
+    <p id="result" class="text-center mt-4"></p>
   </div>
 
   <script>
-const CACHE = CacheService.getScriptCache();
-const FOLDER_ID = '1J-80Xhpth2_BhM8Vjdxe0dfHG_ApKre7';
+    const WEBHOOK_URL = 'https://chat.googleapis.com/v1/spaces/AAQA5xuwKTY/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=cl5AwLRkDdQlMmRccVnwoIfJjfEFziZ2GygGrt7hXZg'; // החלף בכתובת ה-Webhook שלך
+    const REQUIRED_PASSWORD = 'mySecurePassword123'; 
 
-const emails = [
-    { email: "admin@miil-niol.top", name: "ניהול ראשי" },
-  { email: "admin@miil-niol.top", name: "אלי כהן" },
-  { email: "mtzix@miil-niol.top", name: "מצאתי אקספרס" }, 
-  { email: "abctodros@hamakom.ovh", name: "יוסי" },
-  { email: "muhk@miil-niol.top", name: "ניהול קבוצות" },
-    { email: "script-coode@hamakom.ovh", name: "סקריפטים ותכנות" },
-  { email: "76as@miil-niol.top", name: "החדשני שבחדשות" },
-];
+    function handleSubmit() {
+      const message = document.getElementById('message').value.trim();
+      const imageUrl = document.getElementById('image-url').value.trim();
+      const password = document.getElementById('password').value;
+      const result = document.getElementById('result');
+      const messageError = document.getElementById('message-error');
+      const imageUrlError = document.getElementById('image-url-error');
+      const passwordError = document.getElementById('password-error');
 
-const email = Session.getActiveUser().getEmail(); 
-const props = PropertiesService.getScriptProperties(); // שימוש ב-Script Properties לשמירת מצב משותף
+      // Reset errors
+      messageError.classList.add('hidden');
+      imageUrlError.classList.add('hidden');
+      passwordError.classList.add('hidden');
+      result.textContent = '';
 
-const TELEGRAM_CHANNELS = [
-  { url: "https://t.me/s/divuhim1234"}, // דיווחים חמים מהשטח
-  { url: "https://t.me/s/PikudHaOref_all"}, // פיקוד העורף - כל ההודעות
-  { url: "https://t.me/s/abualiexpress"}, // אבו עלי אקספרס
-  { url: "https://t.me/s/amitsegal"}, // עמית סגל
-  { url: "https://t.me/s/merkaz"}, // מרכז החדשות
-  { url: "https://t.me/s/lieldaphna"}, // ליאל דפנה
-  { url: "https://t.me/s/News_cabinet_news"}, // חדשות הממשלה
-  { url: "https://t.me/s/ynetalerts"}, // ynet - עדכונים
-  { url: "https://t.me/s/ramreports"}, // רם ברנדס - דיווחים
-  { url: "https://t.me/s/news00009"}, // חדשות 00009
-  { url: "https://t.me/s/yedidya_epshteyn"}, // ידידיה אפשטיין
-  { url: "https://t.me/s/HallelBittonRosen"}, // הלל ביטון רוזן
-  { url: "https://t.me/s/yediyot_bnei_brak"}, // ידיעות בני ברק
-  { url: "https://t.me/s/kolahadasot"}, // קול החדשות
-  { url: "https://t.me/s/yinonews"}, // ידיעות און ליין
-  { url: "https://t.me/s/Newss0nline"}, // חדשות און ליין
-  { url: "https://t.me/s/pkpoi"}, // פוקוס פוינט
-  { url: "https://t.me/s/Now14israel"}, // עכשיו 14
-  { url: "https://t.me/s/firstreportsnews"}, // דיווחים ראשוניים
-  { url: "https://t.me/s/TheBigBadShadow"}, // הצל
-  { url: "https://t.me/s/tzviye"}, // צבי יחזקאלי
-  { url: "https://t.me/s/NTD_Hebrew"}, // NTD עברית
-  { url: "https://t.me/s/bnetanyahu"}, // בנימין נתניהו
-  { url: "https://t.me/s/YLapid"}, // יאיר לפיד
-  { url: "https://t.me/s/yarivlevin"}, // יריב לוין
-  { url: "https://t.me/s/ayeletshaked1"}, // איילת שקד
-  { url: "https://t.me/s/yairsherkinews"}, // יאיר שרקי
-  { url: "https://t.me/s/mivzakibitahon"}, // מבזקי ביטחון - ישראל היום
-  { url: "https://t.me/s/N12_News"}, // חדשות 12
-  { url: "https://t.me/s/behadrei_harebim_bhol"}, // חדרי חרדים
-  { url: "https://t.me/s/idf_telegram"}, // צבא ההגנה לישראל
-  { url: "https://t.me/s/JewishFist"}, // האגרוף היהודי
-  { url: "https://t.me/s/arabworld301news"}, // העולם הערבי - חדשות
-  { url: "https://t.me/s/israel_news_telegram"}, // חדשות ישראל
-  { url: "https://t.me/s/GLOBAL_Telegram_MOKED"}, // מוקד החדשות - גלובל
-  { url: "https://t.me/s/knessettv"}, // ערוץ הכנסת
-  { url: "https://t.me/s/hadasot10"}, // חדשות 10
-  { url: "https://t.me/s/New_security8200"}, // חדשות ביטחון 8200
-  { url: "https://t.me/s/hazfon1"}, // חדשות הצפון 1
-  { url: "https://t.me/s/Yotamzimritelegram"}, // יותם זמרי
-  { url: "https://t.me/s/elisha_yered"}, // אלישע ירד
-  { url: "https://t.me/s/filbers"}, // פילבר
-  { url: "https://t.me/s/amirbohbot"}, // אמיר בוחבוט
-  { url: "https://t.me/s/realelchangr"}, // אלחנן גרונר
-  { url: "https://t.me/s/FidYamin"}, // פיד ימין
-  { url: "https://t.me/s/tamirmorag14"}, // תמיר מורג
-  { url: "https://t.me/bengvir"}, // איתמר בן גביר
-  { url: "https://t.me/s/ZakaHQ"}, // זק"א
-  { url: "https://t.me/s/mdaisrael"}, // מגן דוד אדום
-  { url: "https://t.me/s/uh1221"}, // איחוד הצלה
-  { url: "https://t.me/s/techisrael"}, // טק ישראל
-  { url: "https://t.me/s/tzap1"} // צאפ מגזין
-];
-const GOOGLE_CHAT_WEBHOOK_URL = "https://chat.googleapis.com/v1/spaces/AAQA5xuwKTY/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=cl5AwLRkDdQlMmRccVnwoIfJjfEFziZ2GygGrt7hXZg";
-const DELAY_BETWEEN_MESSAGES_MS = 1000; // הגדרתי כ-1000ms, ניתן להגדיל אם עדיין נתקלים בבעיות מכסה.
-
-
-/**
- * פונקציה ראשית הבודקת הודעות חדשות בערוצי טלגרם.
- */
-function checkForNewMessages() {
-  // אם התור לא עבר למשתמש הנוכחי, עצור את הפונקציה
-  if (props.getProperty("טריגר") && props.getProperty("טריגר") !== email) {
-    console.log(`התור אינו שלי. משתמש נוכחי: ${email}, תור אצל: ${props.getProperty("טריגר")}`);
-    return;
-  }
-
-  TELEGRAM_CHANNELS.forEach(channel => {
-    const lastMessageId = PropertiesService.getScriptProperties().getProperty(`lastMessageId_${channel.url}`) || "0";
-    
-    let response;
-    try {
-      response = UrlFetchApp.fetch(channel.url, { muteHttpExceptions: true });
-    } catch (e) {
-      console.error(`שגיאה ב-UrlFetchApp.fetch עבור: ${channel.url} - ${e.message}`);
-      // בדיקה כללית לשגיאות HTTP כולל 429
-      if (e.message.includes("returned code 429")) {
-        console.error(`שגיאת מכסה (429) בעת שליפת ערוץ: ${channel.url}. מנסה להחליף משתמש.`);
-        switchUser(`שגיאת מכסה בשליפת טלגרם: ${e.message}`);
-        return; // עצור את הריצה הנוכחית עבור הערוץ הזה
+      // Validate inputs
+      let isValid = true;
+      if (!message) {
+        messageError.classList.remove('hidden');
+        isValid = false;
       }
-      return;
-    }
+      if (imageUrl && !isValidUrl(imageUrl)) {
+        imageUrlError.textContent = 'כתובת URL לא תקינה (חייבת להסתיים ב-jpg, jpeg, png או gif)';
+        imageUrlError.classList.remove('hidden');
+        isValid = false;
+      }
+      if (!password || password !== REQUIRED_PASSWORD) {
+        passwordError.textContent = 'סיסמה שגויה או חסרה';
+        passwordError.classList.remove('hidden');
+        isValid = false;
+      }
 
-    if (response.getResponseCode() === 429) {
-      console.error(`שגיאת מכסה (429) עבור ערוץ: ${channel.url}. מנסה להחליף משתמש.`);
-      switchUser(`שגיאת מכסה בשליפת טלגרם: ${response.getContentText()}`);
-      return; // עצור את הריצה הנוכחית עבור הערוץ הזה
-    }
+      if (!isValid) return;
 
-    if (response.getResponseCode() !== 200) {
-      console.error(`שגיאה בשליפת דף הטלגרם: ${channel.url} - קוד תגובה: ${response.getResponseCode()}`);
-      return;
-    }
-
-    const html = response.getContentText();
-    const channelInfo = getChannelInfo(html);
-    const messages = parseMessagesFromHtml(html);
-    let newLastMessageId = parseInt(lastMessageId);
-
-    messages.forEach(message => {
-      if (message.id > newLastMessageId) {
-        if (message.videoUrl) {
-          message.videoUrl = uploadVideoToDrive(message.videoUrl);
+      // Confirm image submission
+      if (imageUrl) {
+        if (!confirm('האם אתה מאשר לשלוח את התמונה עם הכתובת שנבחרה?')) {
+          result.textContent = 'שליחה בוטלה';
+          result.classList.remove('success');
+          result.classList.add('error');
+          return;
         }
-        
-        // ניסיון שליחה לגוגל צ'אט עם טיפול בשגיאת מכסה
-        try {
-          sendCardToGoogleChat(message, channelInfo);
-        } catch (e) {
-          if (e.message.includes("returned code 429")) {
-            console.error(`שגיאת מכסה (429) בעת שליחה לגוגל צ'אט עבור הודעה ${message.id}. מנסה להחליף משתמש: ${e.message}`);
-            switchUser(`שגיאת מכסה בגוגל צ'אט: ${e.message}`);
-            return; // עצור את הלולאה הנוכחית (forEach) כדי לא לנסות לשלוח עוד הודעות
-          } else {
-            console.error(`שגיאה אחרת בשליחה לגוגל צ'אט: ${e.message}`);
-            // ניתן להוסיף כאן טיפול נוסף לשגיאות שאינן 429
-            return;
+      }
+
+      // Send message
+      sendMessage(message, imageUrl);
+    }
+
+    function isValidUrl(url) {
+      try {
+        new URL(url);
+        return /\.(jpg|jpeg|png|gif)$/i.test(url);
+      } catch {
+        return false;
+      }
+    }
+
+    function sendMessage(message, imageUrl) {
+      const result = document.getElementById('result');
+      result.textContent = 'שולח הודעה...';
+
+      const payload = {
+        cardsV2: [{
+          cardId: 'messageCard',
+          card: {
+            header: { title: 'הודעה חדשה', subtitle: new Date().toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' }) },
+            sections: [
+              { widgets: [{ textParagraph: { text: message } }] },
+              ...(imageUrl ? [{ widgets: [{ image: { imageUrl } }] }] : [])
+            ]
           }
-        }
-        newLastMessageId = Math.max(newLastMessageId, message.id);
-        Utilities.sleep(DELAY_BETWEEN_MESSAGES_MS);
-      }
-    });
+        }]
+      };
 
-    if (newLastMessageId > parseInt(lastMessageId)) {
-      PropertiesService.getScriptProperties().setProperty(`lastMessageId_${channel.url}`, newLastMessageId.toString());
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        if (!response.ok) throw new Error(`שגיאה: ${response.status} - ${response.statusText}`);
+        result.textContent = 'ההודעה נשלחה בהצלחה!';
+        result.classList.remove('error');
+        result.classList.add('success');
+        clearForm();
+      })
+      .catch(error => {
+        result.textContent = `שגיאה בשליחה: ${error.message}`;
+        result.classList.remove('success');
+        result.classList.add('error');
+      });
     }
-  });
-}
 
-/**
- * מעלה קובץ וידאו מכתובת אתר ל-Google Drive.
- * @param {string} url - כתובת ה-URL של קובץ הוידאו.
- * @returns {string|null} - כתובת ה-URL של הקובץ ב-Drive, או null במקרה של שגיאה.
- */
-function uploadVideoToDrive(url) {
-  try {
-    Utilities.sleep(5000); // המתנה לפני הורדת וידאו
-    const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
-    if (response.getResponseCode() !== 200) {
-      console.error(`שגיאה בהורדת הסרטון: ${url} - קוד תגובה: ${response.getResponseCode()}`);
-      return null;
+    function clearForm() {
+      document.getElementById('message').value = '';
+      document.getElementById('image-url').value = '';
+      document.getElementById('password').value = '';
     }
-    const blob = response.getBlob();
-    const folder = DriveApp.getFolderById(FOLDER_ID);
-    const files = folder.getFilesByName("החדשני שבחדשות");
-    let count = 1;
-    while (files.hasNext()) {
-      files.next();
-      count++;
-    }
-    const fileName = `החדשני שבחדשות ${count}.mp4`;
-    const file = folder.createFile(blob.setName(fileName));
-    return file.getUrl();
-  } catch (error) {
-    console.error("שגיאה בהעלאת הסרטון לדרייב: ", error.message);
-    return null;
-  }
-}
-
-/**
- * מחלץ מידע על הערוץ מתוך קוד ה-HTML.
- * @param {string} html - קוד ה-HTML של דף הערוץ.
- * @returns {object} - אובייקט המכיל את שם הערוץ ותמונת הפרופיל שלו.
- */
-function getChannelInfo(html) {
-  const nameMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
-  const imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
-  return {
-    name: nameMatch ? nameMatch[1] : "Unknown Channel",
-    imageUrl: imageMatch ? imageMatch[1] : ""
-  };
-}
-
-/**
- * מנתח הודעות מתוך קוד ה-HTML של דף הערוץ.
- * @param {string} html - קוד ה-HTML של דף הערוץ.
- * @returns {Array<object>} - מערך של אובייקטים, כל אחד מייצג הודעה.
- */
-function parseMessagesFromHtml(html) {
-  const messages = [];
-  const messageBlocks = html.match(/<div class="tgme_widget_message_wrap js-widget_message_wrap"[\s\S]*?<\/div><\/div>/g) || [];
-  messageBlocks.forEach(block => {
-    const idMatch = block.match(/data-post="[^"]*?\/(\d+)"/);
-    if (!idMatch) return;
-    const messageId = parseInt(idMatch[1]);
-    const textMatch = block.match(/<div class="tgme_widget_message_text js-message_text"[^>]*>([\s\S]*?)<\/div>/);
-    let text = textMatch ? cleanText(textMatch[1]) : "";
-    text = text.replace(/https:\/\/drive\.google\.com\/file\/d\/([^\/]+)\/view\?usp=[^&]+/g, function(match, fileId) {
-      return `https://drive.google.com/file/d/${fileId}/view?usp=drivesdk`;
-    });
-    text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1">$1</a>'); // הופך לינקים ללחיצים
-    const imageMatch = block.match(/background-image:url\(['"]?([^'")]+)['"]?\)/);
-    const imageUrl = imageMatch ? imageMatch[1] : "";
-    const videoMatch = block.match(/<video[^>]+src="([^"]+)"/);
-    const videoUrl = videoMatch ? videoMatch[1] : "";
-    const timeMatch = block.match(/<time datetime="([^"]+)"/);
-    const timestamp = timeMatch ? new Date(timeMatch[1]) : new Date();
-    messages.push({
-      id: messageId,
-      text: text,
-      imageUrl: imageUrl,
-      videoUrl: videoUrl,
-      timestamp: timestamp.toISOString()
-    });
-  });
-  return messages.sort((a, b) => a.id - b.id);
-}
-
-/**
- * מנקה טקסט מהודעות טלגרם, מסיר תגי HTML וביטויים לא רצויים.
- * @param {string} text - הטקסט המקורי.
- * @returns {string} - הטקסט הנקי.
- */
-function cleanText(text) {
-  return text
-    .replace(/<br\s*\/?>/g, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&quot;/g, '"')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/https?:\/\/chat\.whatsapp\.com\/[^\s]+/g, '')
-    .replace(/https?:\/\/wa\.link\/[^\s]+/g, '')
-    .replace(/\s*להצטרפות בוואטסאפ:\s*\n?/g, '')
-    .replace(/\s*בסטטוס:\s*\n?/g, '')
-    .replace(/https?:\/\/t\.me\/[^\s]+/g, '')
-    .replace(/https?:\/\/telegram\.me\/[^\s]+/g, '')
-    .replace(/\s*הצטרפו לערוץ הטלגרם שלנו:\s*\n?/g, '')
-    // ההחלפות החדשות שביקשת:
-    .replace(/פיד ימין - The Right Way בטלגרם:\s*[^\s]*/g, '')
-    .replace(/פיד ימין - The Right Way בוואטסאפ:\s*[^\s]*/g, '')
-    .replace(/לשיתוף בWhatsApp 💬./g, '')
-    // סוף ההחלפות החדשות
-    .replace(/https?:\/\/did\.li\/FidYamin/g, '')
-    .replace(/עקבו אחרי 'חדשות אונליין ללא צנזורה' בכל הפלטפורמות: אינסטגרם \| טיקטוק \| טלגרם/g, '')
-    .replace(/ללא צנזורה חדשות ישראל בטלגרם: [^\s]*/g, '')
-    .replace(/לקבוצת הוואטסאפ: [^\s]*/g, '')
-    .trim();
-}
-
-/**
- * שולח הודעה מעוצבת ככרטיס ל-Google Chat.
- * @param {object} message - אובייקט ההודעה.
- * @param {object} channelInfo - מידע על ערוץ הטלגרם.
- */
-function sendCardToGoogleChat(message, channelInfo) {
-  const formattedDate = new Date(message.timestamp).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" });
-  const sections = [];
-
-  if (message.text.trim()) {
-    sections.push({ "widgets": [{ "textParagraph": { "text": message.text } }] });
-  }
-  if (message.imageUrl) {
-    sections.push({ "widgets": [{ "image": { "imageUrl": message.imageUrl } }] });
-  }
-  if (message.videoUrl) {
-    sections.push({ "widgets": [{ "textParagraph": { "text": `📹 <a href='${message.videoUrl}'>לחץ כאן לצפיה בסרטון</a>` } }] });
-  }
-
-  if (sections.length === 0) return; // אל תשלח כרטיס ריק
-
-  const card = {
-    "cardsV2": [{
-      "cardId": "telegramMessage",
-      "card": {
-        "header": {
-          "title": channelInfo.name,
-          "subtitle": formattedDate,
-          "imageUrl": channelInfo.imageUrl,
-          "imageType": "CIRCLE"
-        },
-        "sections": sections
-      }
-    }]
-  };
-
-  UrlFetchApp.fetch(GOOGLE_CHAT_WEBHOOK_URL, {
-    "method": "post",
-    "contentType": "application/json",
-    "payload": JSON.stringify(card)
-  });
-}
-
-/**
- * פונקציה לשליחת טקסט פשוט לצ'אט (לצרכי התראה/לוגינג של החלפת משתמשים).
- * נדרשת הגדרת GOOGLE_CHAT_WEBHOOK_URL.
- * @param {string} text - הטקסט לשליחה.
- * @param {string} spaceUrl - כתובת ה-webhook של המרחב בצ'אט.
- */
-function sendTextToChat(text, spaceUrl) {
-  const payload = JSON.stringify({ "text": text });
-  try {
-    UrlFetchApp.fetch(spaceUrl, {
-      method: 'post',
-      contentType: 'application/json',
-      payload: payload,
-      muteHttpExceptions: true
-    });
-  } catch (e) {
-    console.error(`שגיאה בשליחת התראת טקסט לצ'אט: ${e.message}`);
-  }
-}
-
-/**
- * פונקציה להחלפת המשתמש בעת שגיאת מכסת שימוש.
- * @param {string} error - שגיאת השליחה שגרמה להחלפה.
- */
-function switchUser(error) {
-  // קבל את מספר המשתמש הבא ברשימה
-  const currentUserIndex = emails.findIndex(e => e.email === email);
-  if (currentUserIndex === -1) {
-    console.error(`המייל ${email} לא נמצא ברשימת המשתמשים. לא ניתן להחליף משתמש.`);
-    sendTextToChat(`שגיאת הגדרה: המייל ${email} לא נמצא ברשימת המשתמשים.`, GOOGLE_CHAT_WEBHOOK_URL);
-    return;
-  }
-
-  const nextUserIndex = (currentUserIndex + 1) % emails.length;
-  // קבל את כתובת המייל של המשתמש הבא
-  const nextEmail = emails[nextUserIndex].email;
-  // קבל את השם המוצג של המשתמש הבא
-  const nextName = emails[nextUserIndex].name;
-
-  // מחיקת הטריגר לשליחת ההודעות עבור המשתמש הנוכחי
-  ScriptApp.getProjectTriggers().forEach(trigger => {
-    if (trigger.getHandlerFunction() === "checkForNewMessages") {
-      ScriptApp.deleteTrigger(trigger);
-      console.log(`טריגר 'checkForNewMessages' נמחק עבור ${email}.`);
-    }
-  });
-
-  // שמור ב-PropertiesService של הפרויקט הנוכחי את המייל של המשתמש הבא בתור
-  props.setProperty("טריגר", nextEmail);
-  console.log(`העברתי את התור למשתמש הבא: ${nextName} (${nextEmail}).`);
-
-  // וודא שיש טריגר יחיד לפונקציית בדיקת התור
-  ensureSingleCheckTrigger();
-  
-  // מעדכן בצ'אט ניסיון על העברת התור (הודעה כללית לכל המשתתפים)
-  sendTextToChat(`שגיאת שליחה: ${error}\nמעביר את התפקיד ל**${nextName}** (${nextEmail}).`, GOOGLE_CHAT_WEBHOOK_URL);
-}
-
-/**
- * פונקציה לבדיקת הטריגרים של הקוד וקבלת התור.
- * מופעלת באמצעות טריגר זמן תקופתי.
- */
-function checkTriggers() {
-  // אם מאפיין "טריגר" של הקוד מוגדר לכתובת המייל שלי
-  if (props.getProperty("טריגר") === email) {
-    console.log(`התור שלי! ${email} - מתחיל לטפל.`);
-    
-    // מחק את טריגר ה-checkTriggers הנוכחי
-    ScriptApp.getProjectTriggers().forEach(trigger => {
-      if (trigger.getHandlerFunction() === "checkTriggers") {
-        ScriptApp.deleteTrigger(trigger);
-        console.log(`טריגר 'checkTriggers' נמחק עבור ${email}.`);
-      }
-    });
-
-    // צור טריגר חדש לשליחת ההודעות (checkForNewMessages)
-    // וודא שזה מוגדר לפי צורך, לדוגמה כל דקה.
-    ScriptApp.newTrigger("checkForNewMessages").timeBased().everyMinutes(1).create();
-    console.log(`טריגר חדש 'checkForNewMessages' נוצר עבור ${email}.`);
-    
-    // וודא שהמאפיין "טריגר" עדיין מוגדר למייל הנוכחי
-    props.setProperty("טריגר", email);
-    
-    // הכרז על קבלת התור בצ'אט
-    sendTextToChat(`**${emails.find(e => e.email === email).name}** קיבלתי את התור, מתחיל את העבודה!`, GOOGLE_CHAT_WEBHOOK_URL);
-  } else {
-    console.log(`עדיין לא תורי. משתמש נוכחי: ${email}, תור אצל: ${props.getProperty("טריגר")}`);
-  }
-}
-
-/**
- * פונקציה שמנקה טריגרים כפולים של "checkTriggers" ומשאירה רק אחד.
- * רצוי להריץ אותה פעם אחת ידנית או להוסיף אותה לפונקציית התקנה ראשונית.
- */
-function ensureSingleCheckTrigger() {
-  let checkTriggerCount = 0;
-  
-  ScriptApp.getProjectTriggers().forEach(trigger => {
-    if (trigger.getHandlerFunction() === "checkTriggers") {
-      checkTriggerCount++;
-      if (checkTriggerCount > 1) {
-        ScriptApp.deleteTrigger(trigger); // מוחק טריגרים נוספים
-        console.log(`טריגר כפול 'checkTriggers' נמחק.`);
-      }
-    }
-  });
-
-  // אם אין בכלל טריגר checkTriggers, צור אחד
-  if (checkTriggerCount === 0) {
-    ScriptApp.newTrigger("checkTriggers").timeBased().everyMinutes(5).create();
-    console.log(`נוצר טריגר ראשוני ל-'checkTriggers'.`);
-  }
-}
-
-/**
- * פונקציה להפעלה ראשונית של הסקריפט לכל משתמש.
- * יש להריץ אותה פעם אחת ידנית לאחר העתקת הסקריפט.
- */
-function setupInitialTrigger() {
-  // וודא שהטריגר הראשוני לשליחת הודעות יופעל רק אם זה המשתמש הראשון בתור
-  if (!props.getProperty("טריגר")) { // אם אף אחד לא מוגדר כרגע
-    props.setProperty("טריגר", emails[0].email); // הגדר את הראשון ברשימה כפעיל
-    if (emails[0].email === email) { // אם אני המשתמש הראשון
-      ScriptApp.newTrigger("checkForNewMessages").timeBased().everyMinutes(1).create();
-      console.log(`הגדרתי טריגר ראשוני 'checkForNewMessages' עבור ${email} (המשתמש הראשון).`);
-    } else {
-      console.log(`הגדרתי את המשתמש הראשון (${emails[0].email}) כפעיל. עותק זה ימתין לתורו.`);
-    }
-  }
-
-  // וודא שקיים טריגר יחיד לבדיקת התור בכל עותק סקריפט
-  ensureSingleCheckTrigger();
-  console.log(`הגדרת טריגרים ראשונית הסתיימה עבור: ${email}`);
-}
   </script>
 </body>
 </html>
