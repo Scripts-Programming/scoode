@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>גלריית העלאת מדיה</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            direction: rtl; /* יישור לימין עבור עברית */
+            text-align: right; /* יישור טקסט לימין */
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+            border: 2px dashed #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+
+        .upload-section label {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .upload-section input[type="file"] {
+            display: block;
+            margin: 0 auto 15px auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: fit-content;
+            cursor: pointer;
+        }
+
+        .upload-section button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .upload-section button:hover {
+            background-color: #0056b3;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .gallery-item {
+            background-color: #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            padding-bottom: 100%; /* Aspect ratio 1:1 */
+            height: 0;
+        }
+
+        .gallery-item img,
+        .gallery-item video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .placeholder {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>העלאת מדיה לגלריה</h1>
+        <div class="upload-section">
+            <label for="mediaUpload">בחר קבצי תמונה או וידאו להעלאה:</label>
+            <input type="file" id="mediaUpload" accept="image/*,video/*" multiple>
+            <button onclick="uploadFiles()">העלה קבצים</button>
+            <p id="uploadMessage" style="color: green; margin-top: 10px;"></p>
+        </div>
+
+        ---
+
+        <h2>הגלריה שלך</h2>
+        <div class="gallery" id="mediaGallery">
+            <p class="placeholder">כאן יוצגו התמונות והסרטונים שלך.</p>
+        </div>
+    </div>
+
+    <script>
+        function uploadFiles() {
+            const input = document.getElementById('mediaUpload');
+            const gallery = document.getElementById('mediaGallery');
+            const message = document.getElementById('uploadMessage');
+            const placeholder = gallery.querySelector('.placeholder');
+
+            if (input.files.length === 0) {
+                message.textContent = 'אנא בחר קבצים להעלאה.';
+                message.style.color = 'red';
+                return;
+            }
+
+            // הסרת הודעת הפלייסיהולדר אם יש קבצים להצגה
+            if (placeholder) {
+                placeholder.remove();
+            }
+
+            for (const file of input.files) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const mediaItem = document.createElement('div');
+                    mediaItem.classList.add('gallery-item');
+
+                    if (file.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = file.name;
+                        mediaItem.appendChild(img);
+                    } else if (file.type.startsWith('video/')) {
+                        const video = document.createElement('video');
+                        video.src = e.target.result;
+                        video.controls = true; // הוספת פקדי וידאו
+                        video.muted = true; // השתקה אוטומטית בהתחלה
+                        video.autoplay = false; // לא לנגן אוטומטית
+                        video.loop = false; // לא לחזור בלופ
+                        mediaItem.appendChild(video);
+                    }
+                    gallery.appendChild(mediaItem);
+                };
+                reader.readAsDataURL(file);
+            }
+            message.textContent = `הועלו ${input.files.length} קבצים בהצלחה!`;
+            message.style.color = 'green';
+            input.value = ''; // ניקוי שדה הקובץ לאחר העלאה
+        }
+    </script>
+</body>
+</html>
