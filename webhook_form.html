@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שליחת הודעה ל-Webhook</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Alef:wght@400;700&family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+Hebrew:wght@400;700&display=swap');
+    body {
+      font-family: 'Alef', 'Rubik', sans-serif;
+      background: linear-gradient(135deg, #ff00cc, #3333ff, #00ffcc, #ff3300);
+      background-size: 600%;
+      animation: neonGradient 10s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      overflow: hidden;
+    }
+    @keyframes neonGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .container {
+      background: rgba(0, 0, 0, 0.85);
+      padding: 3.5rem;
+      border-radius: 2.5rem;
+      box-shadow: 0 30px 100px rgba(255, 0, 204, 0.5), inset 0 0 20px rgba(0, 255, 255, 0.3);
+      max-width: 40rem;
+      width: 90%;
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+      transform: perspective(1000px) rotateX(5deg);
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+      border: 2px solid rgba(255, 0, 204, 0.7);
+    }
+    .container:hover {
+      transform: perspective(1000px) rotateX(0deg) translateY(-15px);
+      box-shadow: 0 40px 120px rgba(255, 0, 204, 0.7);
+    }
+    .container:before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 0, 204, 0.3), transparent);
+      animation: pulseGlow 4s ease-in-out infinite;
+      z-index: -2;
+    }
+    @keyframes pulseGlow {
+      0% { transform: scale(0.8); opacity: 0.3; }
+      50% { transform: scale(1.2); opacity: 0.6; }
+      100% { transform: scale(0.8); opacity: 0.3; }
+    }
+    .form-title {
+      background: linear-gradient(45deg, #ff00cc, #00ffcc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 2.5rem;
+      text-shadow: 0 0 10px rgba(255, 0, 204, 0.8), 0 0 20px rgba(0, 255, 255, 0.5);
+      animation: neonFlicker 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes neonFlicker {
+      0% { opacity: 1; text-shadow: 0 0 10px rgba(255, 0, 204, 0.8), 0 0 20px rgba(0, 255, 255, 0.5); }
+      100% { opacity: 0.95; text-shadow: 0 0 15px rgba(255, 0, 204, 1), 0 0 30px rgba(0, 255, 255, 0.7); }
+    }
+    .input-field {
+      position: relative;
+      margin-bottom: 2.5rem;
+    }
+    .input-field input,
+    .input-field textarea {
+      width: 100%;
+      padding: 1.25rem;
+      border: 3px solid rgba(255, 0, 204, 0.5);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1.25rem;
+      font-size: 1.1rem;
+      color: #ffffff;
+      font-family: 'Alef', 'Rubik', sans-serif;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+    .input-field textarea {
+      resize: vertical;
+      min-height: 140px;
+    }
+    .input-field input:focus,
+    .input-field textarea:focus {
+      border-color: #00ffcc;
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 0 4px rgba(0, 255, 255, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
+      outline: none;
+    }
+    .input-field label {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-family: 'Alef', 'Rubik', sans-serif;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      background: transparent;
+      padding: 0 0.4rem;
+    }
+    .input-field input:focus + label,
+    .input-field input:not(:placeholder-shown) + label,
+    .input-field textarea:focus + label,
+    .input-field textarea:not(:placeholder-shown) + label {
+      top: -1rem;
+      right: 1rem;
+      font-size: 0.8rem;
+      color: #00ffcc;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 0 0.4rem;
+      text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+    }
+    .preview-image {
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 1rem;
+      margin-top: 0.75rem;
+      box-shadow: 0 8px 16px rgba(255, 0, 204, 0.4), 0 0 20px rgba(0, 255, 255, 0.3);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    .preview-image.loaded {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .error {
+      color: #ff3300;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      display: none;
+      text-align: right;
+      font-family: 'Noto Sans Hebrew', sans-serif;
+      text-shadow: 0 0 5px rgba(255, 51, 0, 0.5);
+    }
+    .error.show {
+      display: block;
+    }
+    .success {
+      color: #00ffcc;
+      font-size: 1rem;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 2rem;
+      font-family: 'Noto Sans Hebrew', sans-serif;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 1.25rem;
+      background: linear-gradient(45deg, #ff00cc, #00ffcc);
+      color: #000000;
+      font-weight: 700;
+      border-radius: 1.25rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.5s ease, transform 0.4s ease, box-shadow 0.4s ease;
+      box-shadow: 0 8px 20px rgba(255, 0, 204, 0.5);
+      position: relative;
+      overflow: hidden;
+      font-family: 'Alef', 'Rubik', sans-serif;
+    }
+    .submit-btn:hover {
+      background: linear-gradient(45deg, #e600b3, #00e6b3);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 30px rgba(255, 0, 204, 0.7);
+    }
+    .submit-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 12px rgba(255, 0, 204, 0.3);
+    }
+    .submit-btn:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.7s ease;
+    }
+    .submit-btn:hover:before {
+      left: 100%;
+    }
+    .info-text {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 0.5rem;
+      text-align: right;
+      font-family: 'Noto Sans Hebrew', sans-serif;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+    @media (max-width: 640px) {
+      .container {
+        padding: 2.5rem;
+        width: 95%;
+      }
+      .form-title {
+        font-size: 2rem;
+      }
+      .preview-image {
+        max-width: 150px;
+        max-height: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particles" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -3;"></canvas>
+  <div class="container">
+    <h1 class="form-title">שלח הודעה ל-Webhook שלך!</h1>
+    
+    <div class="input-field">
+      <textarea id="message" placeholder=" "></textarea>
+      <label for="message">הודעה (חובה)</label>
+      <p id="message-error" class="error">אנא הזן הודעה</p>
+    </div>
+
+    <div class="input-field">
+      <input type="url" id="image-url" placeholder=" " />
+      <label for="image-url">כתובת URL של תמונה (אופציונלי)</label>
+      <p id="image-url-error" class="error">כתובת URL לא תקינה (חייבת להסתיים ב-jpg, jpeg, png או gif)</p>
+      <p class="info-text">הזנת כתובת תמונה תציג תצוגה מקדימה ותבקש אישור לפני שליחה</p>
+      <div id="image-preview"></div>
+    </div>
+
+    <div class="input-field">
+      <input type="url" id="webhook-url" placeholder=" " />
+      <label for="webhook-url">כתובת Webhook (חובה)</label>
+      <p id="webhook-url-error" class="error">אנא הזן כתובת Webhook תקינה</p>
+    </div>
+
+    <button onclick="handleSubmit()" class="submit-btn">שלח עכשיו!</button>
+    <p id="result" class="success"></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    // Particles.js configuration
+    particlesJS('particles', {
+      particles: {
+        number: { value: 80 },
+        color: { value: ['#ff00cc', '#00ffcc'] },
+        shape: { type: 'circle' },
+        opacity: { value: 0.5 },
+        size: { value: 3 },
+        line_linked: { enable: false },
+        move: { speed: 6 }
+      },
+      interactivity: {
+        events: { onhover: { enable: true, mode: 'repulse' } }
+      }
+    });
+
+    // Preview image on URL input
+    document.getElementById('image-url').addEventListener('input', function() {
+      const url = this.value.trim();
+      const previewContainer = document.getElementById('image-preview');
+      previewContainer.innerHTML = '';
+      if (url && isValidUrl(url)) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = 'תצוגה מקדימה';
+        img.className = 'preview-image';
+        img.onload = () => img.classList.add('loaded');
+        img.onerror = () => {
+          previewContainer.innerHTML = '<p class="error show">לא ניתן לטעון את התמונה</p>';
+        };
+        previewContainer.appendChild(img);
+      }
+    });
+
+    function handleSubmit() {
+      const message = document.getElementById('message').value.trim();
+      const imageUrl = document.getElementById('image-url').value.trim();
+      const webhookUrl = document.getElementById('webhook-url').value.trim();
+      const result = document.getElementById('result');
+      const messageError = document.getElementById('message-error');
+      const imageUrlError = document.getElementById('image-url-error');
+      const webhookUrlError = document.getElementById('webhook-url-error');
+
+      // Reset errors
+      messageError.classList.remove('show');
+      imageUrlError.classList.remove('show');
+      webhookUrlError.classList.remove('show');
+      result.textContent = '';
+
+      // Validate inputs
+      let isValid = true;
+      if (!message) {
+        messageError.classList.add('show');
+        isValid = false;
+      }
+      if (imageUrl && !isValidUrl(imageUrl)) {
+        imageUrlError.classList.add('show');
+        isValid = false;
+      }
+      if (!webhookUrl || !isValidWebhookUrl(webhookUrl)) {
+        webhookUrlError.classList.add('show');
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      // Confirm image submission
+      if (imageUrl) {
+        if (!confirm('האם אתה מאשר לשלוח את התמונה עם הכתובת שנבחרה?')) {
+          result.textContent = 'שליחה בוטלה';
+          result.classList.remove('success');
+          result.classList.add('error');
+          return;
+        }
+      }
+
+      // Send message with loading spinner
+      result.innerHTML = '<svg class="animate-spin h-5 w-5 inline-block mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"></path></svg>שולח הודעה...';
+      sendMessage(message, imageUrl, webhookUrl);
+    }
+
+    function isValidUrl(url) {
+      try {
+        new URL(url);
+        return /\.(jpg|jpeg|png|gif)$/i.test(url);
+      } catch {
+        return false;
+      }
+    }
+
+    function isValidWebhookUrl(url) {
+      try {
+        new URL(url);
+        return url.startsWith('https://');
+      } catch {
+        return false;
+      }
+    }
+
+    function sendMessage(message, imageUrl, webhookUrl) {
+      const result = document.getElementById('result');
+      const payload = {
+        cardsV2: [{
+          cardId: 'messageCard',
+          card: {
+            sections: [
+              { widgets: [{ textParagraph: { text: message } }] },
+              ...(imageUrl ? [{ widgets: [{ image: { imageUrl } }] }] : [])
+            ]
+          }
+        }]
+      };
+
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        if (!response.ok) throw new Error(`שגיאה: ${response.status} - ${response.statusText}`);
+        result.textContent = 'ההודעה נשלחה בהצלחה!';
+        result.classList.remove('error');
+        result.classList.add('success');
+        clearForm();
+      })
+      .catch(error => {
+        result.textContent = `שגיאה בשליחה: ${error.message}`;
+        result.classList.remove('success');
+        result.classList.add('error');
+      });
+    }
+
+    function clearForm() {
+      document.getElementById('message').value = '';
+      document.getElementById('image-url').value = '';
+      document.getElementById('webhook-url').value = '';
+      document.getElementById('image-preview').innerHTML = '';
+    }
+  </script>
+</body>
+</html>
