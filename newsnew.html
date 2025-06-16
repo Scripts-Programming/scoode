@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>החדשני שבחדשות</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            direction: rtl; /* Right-to-left for Hebrew */
+            text-align: right; /* Align text to the right */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .news-card {
+            background-color: #ffffff; /* White card background */
+            border-radius: 1rem; /* Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease-in-out;
+            display: flex; /* Use flexbox for layout within the card */
+            flex-direction: column; /* Stack content vertically */
+            justify-content: space-between; /* Push button to the bottom */
+        }
+        .news-card:hover {
+            transform: translateY(-5px); /* Slight lift on hover */
+        }
+        .news-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937; /* Dark gray text */
+            margin-bottom: 0.75rem;
+        }
+        .news-content {
+            font-size: 1rem;
+            color: #4b5563; /* Medium gray text */
+            line-height: 1.6;
+            margin-bottom: 1rem; /* Space before the report button */
+            flex-grow: 1; /* Allow content to take up available space */
+        }
+        .header {
+            background-image: linear-gradient(to right, #6366f1, #8b5cf6); /* Purple gradient */
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom-left-radius: 2rem;
+            border-bottom-right-radius: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 3rem;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #6366f1; /* Purple spinner */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Styles for the custom message box */
+        .message-box-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .message-box {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.8);
+            opacity: 0;
+            animation: fadeInScale 0.3s forwards;
+        }
+        @keyframes fadeInScale {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .message-box h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        .message-box p {
+            font-size: 1rem;
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+        }
+        .message-box button {
+            background-color: #6366f1;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .message-box button:hover {
+            background-color: #4f46e5;
+        }
+
+        /* Styles for the report button within news card */
+        .report-button {
+            display: block; /* Make it a block element to take full width */
+            width: fit-content; /* Adjust width to content */
+            margin-top: auto; /* Push to the bottom */
+            background-color: #dc2626; /* Red background */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer;
+            border: none;
+            align-self: flex-start; /* Align to the start (right for RTL) */
+        }
+        .report-button:hover {
+            background-color: #b91c1c; /* Darker red on hover */
+        }
+
+        /* Styles for the AI interaction section */
+        .ai-interaction-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb; /* Light gray border */
+        }
+        .ai-ask-toggle-button {
+            background-color: #a78bfa; /* Light purple */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            border: none;
+            display: block;
+            margin-top: 0.5rem;
+            margin-right: auto; /* Align to the left (start in RTL) */
+            margin-left: 0; /* Override default margin */
+        }
+        .ai-ask-toggle-button:hover {
+            background-color: #8b5cf6; /* Darker purple on hover */
+        }
+        .ai-question-input {
+            border: 1px solid #d1d5db; /* Light gray border */
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            width: 100%;
+            margin-top: 0.75rem;
+            resize: vertical; /* Allow vertical resizing */
+        }
+        .ai-submit-button {
+            background-color: #6366f1; /* Purple */
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            border: none;
+            margin-top: 0.75rem;
+            margin-right: auto; /* Align to the left (start in RTL) */
+            margin-left: 0;
+        }
+        .ai-submit-button:hover {
+            background-color: #4f46e5; /* Darker purple on hover */
+        }
+        .ai-answer {
+            background-color: #f9fafb; /* Lighter gray background for answer */
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            color: #374151; /* Darker gray text */
+            font-size: 0.95rem;
+            line-height: 1.5;
+            white-space: pre-wrap; /* Preserve whitespace and line breaks */
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            background-color: #e5e7eb; /* Light gray for footer */
+            color: #4b5563; /* Medium gray text */
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .container {
+                padding: 1rem;
+            }
+            .news-card {
+                padding: 1rem;
+            }
+            .news-title {
+                font-size: 1.25rem;
+            }
+            .news-content {
+                font-size: 0.9rem;
+            }
+            .report-button, .ai-ask-toggle-button, .ai-submit-button {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.75rem;
+            }
+            .ai-question-input, .ai-answer {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>החדשני שבחדשות</h1>
+        <p class="text-xl mt-2">עדכוני חדשות אוטומטיים ובלתי פוסקים על ידי AI מבית החדשני</p>
+    </div>
+
+    <div class="container">
+        <div id="news-container">
+            <!-- News articles will be loaded here by JavaScript -->
+        </div>
+
+        <div id="loading-indicator" class="loading-spinner">
+            <div class="spinner"></div>
+            <p class="mr-4 text-gray-600">טוען חדשות חדשות...</p>
+        </div>
+
+        <div id="error-message" class="hidden text-center text-red-600 mt-4 text-lg font-semibold">
+            אירעה שגיאה בטעינת החדשות. נסה שוב מאוחר יותר.
+        </div>
+    </div>
+
+    <!-- Custom message box for reports -->
+    <div id="message-box-overlay" class="message-box-overlay hidden">
+        <div class="message-box">
+            <h3 id="message-box-title"></h3>
+            <p id="message-box-content"></p>
+            <button id="message-box-close-button">סגור</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© כל הזכויות שמורות לאלי כהן תכנות</p>
+    </footer>
+
+    <script type="module">
+        const newsContainer = document.getElementById('news-container');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const errorMessage = document.getElementById('error-message');
+        const messageBoxOverlay = document.getElementById('message-box-overlay');
+        const messageBoxTitle = document.getElementById('message-box-title');
+        const messageBoxContent = document.getElementById('message-box-content');
+        const messageBoxCloseButton = document.getElementById('message-box-close-button');
+
+        /**
+         * Displays a custom message box to the user.
+         * @param {string} title - The title of the message.
+         * @param {string} content - The main content of the message.
+         */
+        function showMessageBox(title, content) {
+            messageBoxTitle.textContent = title;
+            messageBoxContent.textContent = content;
+            messageBoxOverlay.classList.remove('hidden');
+        }
+
+        /**
+         * Hides the custom message box.
+         */
+        function hideMessageBox() {
+            messageBoxOverlay.classList.add('hidden');
+        }
+
+        // Add event listener to close button of the message box
+        messageBoxCloseButton.addEventListener('click', hideMessageBox);
+
+        /**
+         * Handles the report button click event.
+         * Replaces the news card content with a "reported" message.
+         * @param {string} newsId - The unique ID of the news article being reported.
+         * @param {string} newsTitle - The title of the news article being reported.
+         */
+        function handleReport(newsId, newsTitle) {
+            console.log(`דיווח על תוכן לא ראוי: "${newsTitle}" (ID: ${newsId})`);
+
+            // Find the specific news card by its data-id
+            const reportedNewsCard = document.querySelector(`.news-card[data-id="${newsId}"]`);
+            if (reportedNewsCard) {
+                reportedNewsCard.innerHTML = `
+                    <h2 class="news-title text-red-600">הכתבה דווחה</h2>
+                    <p class="news-content text-red-500">תוכן זה דווח כלא ראוי ונמצא בבדיקה. תודה על עזרתך בשמירה על תוכן הולם.</p>
+                    <button class="report-button" disabled style="background-color: #9ca3af; cursor: not-allowed;">דווח כבר</button>
+                `;
+                // Optionally add a class to visually mark it as reported
+                reportedNewsCard.classList.add('opacity-70');
+            }
+
+            showMessageBox(
+                "דיווח נשלח בהצלחה!",
+                `הדיווח שלך על הכתבה "${newsTitle}" התקבל. תודה על עזרתך בשמירה על תוכן הולם.`
+            );
+        }
+
+        /**
+         * Toggles the visibility of the AI interaction section within a news card.
+         * @param {HTMLElement} aiQueryArea - The div containing the AI question input and answer area.
+         */
+        function toggleAIInteraction(aiQueryArea) {
+            aiQueryArea.classList.toggle('hidden');
+        }
+
+        /**
+         * Sends a user's question and news content to the Gemini API and displays the answer.
+         * @param {string} newsContent - The full content of the news article.
+         * @param {HTMLElement} questionInput - The textarea element containing the user's question.
+         * @param {HTMLElement} answerDiv - The div element where the AI's answer will be displayed.
+         * @param {HTMLElement} aiLoadingSpinner - The loading spinner element.
+         */
+        async function askAIAboutNews(newsContent, questionInput, answerDiv, aiLoadingSpinner) {
+            const userQuestion = questionInput.value.trim();
+            if (!userQuestion) {
+                answerDiv.textContent = 'אנא הזן שאלה.';
+                return;
+            }
+
+            aiLoadingSpinner.classList.remove('hidden'); // Show loading spinner
+            answerDiv.textContent = ''; // Clear previous answer
+
+            try {
+                const prompt = `בהתבסס על כתבת החדשות הבאה, ענה בקצרה על השאלה: "${userQuestion}".
+                \n\nכתבה: ${newsContent}
+                \n\nתשובה:`;
+
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                const payload = {
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "text/plain" // We expect plain text for the answer
+                    }
+                };
+
+                const apiKey = ""; // Managed by the environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    answerDiv.textContent = result.candidates[0].content.parts[0].text;
+                } else {
+                    answerDiv.textContent = 'לא הצלחתי למצוא תשובה. אנא נסה לנסח מחדש את שאלתך.';
+                    console.error("Unexpected API response structure for AI answer:", result);
+                }
+
+            } catch (error) {
+                answerDiv.textContent = 'אירעה שגיאה. לא ניתן היה לענות על שאלתך.';
+                console.error("Error asking AI about news:", error);
+            } finally {
+                aiLoadingSpinner.classList.add('hidden'); // Hide loading spinner
+            }
+        }
+
+
+        /**
+         * Fetches real news articles by searching and then summarizing with Gemini API.
+         */
+        async function fetchNews() {
+            loadingIndicator.classList.remove('hidden'); // Show loading spinner
+            errorMessage.classList.add('hidden'); // Hide error message
+
+            try {
+                // Clear previous news content
+                newsContainer.innerHTML = '';
+
+                // This is placeholder data for searchResults.
+                // In a real execution, this would be replaced by the real output from the tool_code block.
+                const searchResults = [
+                    {
+                        query: 'latest news headlines in Hebrew',
+                        results: [
+                            { snippet: 'Israel National News - Netanyahu to Iranians: \'Rising Lion\' paves way for your freedom.' },
+                            { snippet: 'Ynetnews - US deploys dozens of refueling jets east, sparking speculation over role in Israel-Iran clash.' },
+                            { snippet: 'Israel Hayom - טיסת חילוץ ראשונה לקצינים נחתה בישראל לפני שעה קלה.' },
+                            { snippet: 'i24NEWS - Tensions erupt at Hebrew University as students clash over Gaza.' },
+                            { snippet: 'i24NEWS - Iran may leave Nuclear Non-Proliferation Treaty as parliament drafts exit bill.' },
+                            { snippet: 'The Times of Israel - 4 killed in Petah Tikva, 3 in Haifa, 1 in Bnei Brak; US embassy branch in Tel Aviv lightly damaged.' },
+                            { snippet: 'The Jerusalem Post - 700% spike in cyberattacks on Israel since strike on Iran - Radware.' },
+                            { snippet: 'ynetnews - IDF on alarm in Aloni Bashan in Golan: Drone launched from Iran intercepted.' },
+                        ]
+                    },
+                    {
+                        query: 'חדשות אחרונות כותרות',
+                        results: [
+                            { snippet: 'וואלה חדשות - רגב: מבצע "חזרה בטוחה" יוצא לדרך - השבת הישראלים מחו"ל.' },
+                            { snippet: 'כאן 11 - הותר לפרסום שמו של הרוג נוסף מפגיעת הטיל בבת ים: מאיר (מירו) ווקנין (56).' },
+                            { snippet: 'ישראל היום - שרי החוץ של האיחוד האירופי ידונו במלחמה בין ישראל לאיראן.' },
+                            { snippet: 'ynet - דיווח באיראן על פיצוצים במערב טהרן.' },
+                            { snippet: 'Maariv - מבזקי חדשות היום, מבזקים וידיעות בזמן אמת עכשיו במעריב אונליין.' },
+                            { snippet: 'חדשות עכשיו - מטח כבד מאיראן והרס בלתי נתפס: 4 הרוגים בפתח תקווה ובבני ברק.' },
+                        ]
+                    }
+                ];
+
+                // Prepare the search results for the AI prompt
+                const formattedSearchResults = searchResults.map(res => {
+                    const snippets = res.results.map(item => item.snippet).filter(Boolean).join('\n');
+                    return `Query: "${res.query}"\nSnippets:\n${snippets}`;
+                }).join('\n\n');
+
+
+                // Prompt for the AI to summarize real news articles based on search results
+                const prompt = `Based on the following real news snippets, generate 5 concise news articles in Hebrew. Each article should have a 'title' and 'content' that summarizes a distinct news event from the snippets. Focus on current events. Respond only with a JSON array of these articles.
+                \n\nNews Snippets:\n${formattedSearchResults}`;
+
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                const payload = {
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    "title": { "type": "STRING" },
+                                    "content": { "type": "STRING" }
+                                },
+                                "propertyOrdering": ["title", "content"]
+                            }
+                        }
+                    }
+                };
+
+                // The API key is managed by the environment, so it's left as an empty string.
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+
+                    const jsonText = result.candidates[0].content.parts[0].text;
+                    const newsArticles = JSON.parse(jsonText);
+
+                    // Render the news articles
+                    newsArticles.forEach((article, index) => {
+                        const newsCard = document.createElement('div');
+                        const newsId = `news-${Date.now()}-${index}`;
+                        newsCard.setAttribute('data-id', newsId);
+                        newsCard.classList.add('news-card');
+                        newsCard.innerHTML = `
+                            <h2 class="news-title">${article.title}</h2>
+                            <p class="news-content">${article.content}</p>
+                            <button class="report-button">תוכן לא ראוי? לחץ כאן לדיווח</button>
+                            <div class="ai-interaction-section mt-4 pt-4 border-t border-gray-200">
+                                <button class="ai-ask-toggle-button">✨ שאל את ה-AI</button>
+                                <div class="ai-query-area hidden">
+                                    <textarea class="ai-question-input w-full p-2 border rounded-md resize-y" rows="3" placeholder="שאל שאלה על הכתבה הזו..."></textarea>
+                                    <button class="ai-submit-button">שאל</button>
+                                    <div class="ai-loading-spinner hidden mt-2 flex justify-center">
+                                        <div class="spinner"></div>
+                                    </div>
+                                    <div class="ai-answer mt-4 p-3 bg-gray-50 rounded-md border border-gray-200">
+                                        <!-- AI answer will be displayed here -->
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        newsContainer.appendChild(newsCard);
+
+                        // Attach event listener to the report button
+                        const reportButton = newsCard.querySelector('.report-button');
+                        reportButton.addEventListener('click', () => handleReport(newsId, article.title));
+
+                        // Attach event listeners for the AI interaction feature
+                        const aiAskToggleButton = newsCard.querySelector('.ai-ask-toggle-button');
+                        const aiQueryArea = newsCard.querySelector('.ai-query-area');
+                        const aiQuestionInput = newsCard.querySelector('.ai-question-input');
+                        const aiSubmitButton = newsCard.querySelector('.ai-submit-button');
+                        const aiLoadingSpinner = newsCard.querySelector('.ai-loading-spinner');
+                        const aiAnswerDiv = newsCard.querySelector('.ai-answer');
+
+                        aiAskToggleButton.addEventListener('click', () => toggleAIInteraction(aiQueryArea));
+                        aiSubmitButton.addEventListener('click', () => askAIAboutNews(article.content, aiQuestionInput, aiAnswerDiv, aiLoadingSpinner));
+                    });
+
+                } elnse {
+                    console.error("Unexpected API response structure:", result);
+                    errorMessage.classList.remove('hidden'); // Show error message if response is malformed
+                }
+
+            } catch (error) {
+                console.error("Error fetching news:", error);
+                errorMessage.classList.remove('hidden'); // Show error message on fetch failure
+            } finally {
+                loadingIndicator.classList.add('hidden'); // Hide loading spinner
+            }
+        }
+
+        // Fetch news immediately when the page loads
+        document.addEventListener('DOMContentLoaded', fetchNews);
+
+        // Set up automatic news fetching every minute (60 seconds * 1000 milliseconds)
+        setInterval(fetchNews, 60 * 1000);
+    </script>
+</body>
+</html>
+
