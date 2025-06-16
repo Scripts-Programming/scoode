@@ -21,52 +21,61 @@
         }
         .news-card {
             background-color: #ffffff; /* White card background */
-            border-radius: 1rem; /* Rounded corners */
+            border-radius: 1.5rem; /* More rounded corners */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            transition: transform 0.2s ease-in-out;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             display: flex; /* Use flexbox for layout within the card */
             flex-direction: column; /* Stack content vertically */
             justify-content: space-between; /* Push button to the bottom */
+            border: 1px solid #e2e8f0; /* Light border */
         }
         .news-card:hover {
             transform: translateY(-5px); /* Slight lift on hover */
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
         }
         .news-title {
-            font-size: 1.5rem;
+            font-size: 1.6rem; /* Slightly larger title */
             font-weight: 700;
-            color: #1f2937; /* Dark gray text */
+            color: #1a202c; /* Darker gray text */
             margin-bottom: 0.75rem;
         }
         .news-content {
-            font-size: 1rem;
-            color: #4b5563; /* Medium gray text */
-            line-height: 1.6;
+            font-size: 1.05rem; /* Slightly larger content text */
+            color: #4a5568; /* Medium gray text */
+            line-height: 1.7; /* Better line spacing */
             margin-bottom: 1rem; /* Space before the report button */
             flex-grow: 1; /* Allow content to take up available space */
         }
         .header {
             background-image: linear-gradient(to right, #6366f1, #8b5cf6); /* Purple gradient */
             color: white;
-            padding: 2rem 0;
+            padding: 2.5rem 0; /* More padding */
             text-align: center;
-            border-bottom-left-radius: 2rem;
-            border-bottom-right-radius: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            border-bottom-left-radius: 3rem; /* More rounded */
+            border-bottom-right-radius: 3rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Stronger shadow */
         }
         .header h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: -0.05em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 3.5rem; /* Larger heading */
+            font-weight: 800; /* Bolder */
+            letter-spacing: -0.06em; /* Tighter letter spacing */
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            font-size: 1.25rem; /* Larger subtitle */
+            font-weight: 400;
         }
         .loading-spinner {
             display: flex;
             justify-content: center;
             align-items: center;
             margin-top: 3rem;
+            color: #6366f1;
+            font-weight: 600;
         }
         .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
@@ -96,11 +105,11 @@
         }
         .message-box {
             background-color: #ffffff;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 2.5rem; /* More padding */
+            border-radius: 1.5rem; /* More rounded */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25); /* Stronger shadow */
             text-align: center;
-            max-width: 400px;
+            max-width: 450px; /* Slightly wider */
             width: 90%;
             transform: scale(0.8);
             opacity: 0;
@@ -113,121 +122,156 @@
             }
         }
         .message-box h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 1rem;
+            font-size: 1.7rem; /* Larger title */
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1.2rem;
         }
         .message-box p {
-            font-size: 1rem;
-            color: #4b5563;
-            margin-bottom: 1.5rem;
+            font-size: 1.1rem; /* Larger content */
+            color: #4a5568;
+            margin-bottom: 2rem;
         }
         .message-box button {
             background-color: #6366f1;
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 0.8rem 2rem; /* Larger button */
             border-radius: 0.75rem;
             font-weight: 600;
-            transition: background-color 0.2s ease-in-out;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .message-box button:hover {
             background-color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
         }
 
         /* Styles for the report button within news card */
         .report-button {
-            display: block; /* Make it a block element to take full width */
-            width: fit-content; /* Adjust width to content */
-            margin-top: auto; /* Push to the bottom */
-            background-color: #dc2626; /* Red background */
+            display: block;
+            width: fit-content;
+            margin-top: auto;
+            background-color: #ef4444; /* Slightly brighter red */
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: background-color 0.2s ease-in-out;
+            padding: 0.6rem 1.2rem; /* Slightly larger padding */
+            border-radius: 0.75rem; /* More rounded */
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
             cursor: pointer;
             border: none;
-            align-self: flex-start; /* Align to the start (right for RTL) */
+            align-self: flex-start;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .report-button:hover {
-            background-color: #b91c1c; /* Darker red on hover */
+            background-color: #dc2626; /* Darker red on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
+        .report-button:disabled {
+            background-color: #9ca3af !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
 
         /* Styles for the AI interaction section */
         .ai-interaction-section {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #e5e7eb; /* Light gray border */
+            margin-top: 1.5rem; /* More margin */
+            padding-top: 1.5rem; /* More padding */
+            border-top: 1px solid #e5e7eb;
         }
         .ai-ask-toggle-button {
-            background-color: #a78bfa; /* Light purple */
+            background-color: #8b5cf6; /* Stronger purple */
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s ease-in-out;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
             border: none;
             display: block;
             margin-top: 0.5rem;
-            margin-right: auto; /* Align to the left (start in RTL) */
-            margin-left: 0; /* Override default margin */
+            margin-right: auto;
+            margin-left: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .ai-ask-toggle-button:hover {
-            background-color: #8b5cf6; /* Darker purple on hover */
+            background-color: #7c3aed; /* Darker purple on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
         .ai-question-input {
-            border: 1px solid #d1d5db; /* Light gray border */
-            border-radius: 0.5rem;
-            padding: 0.75rem;
+            border: 1px solid #cbd5e0; /* Slightly darker border */
+            border-radius: 0.75rem; /* More rounded */
+            padding: 0.8rem; /* More padding */
             width: 100%;
-            margin-top: 0.75rem;
-            resize: vertical; /* Allow vertical resizing */
+            margin-top: 1rem; /* More margin */
+            resize: vertical;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .ai-question-input::placeholder {
+            color: #a0aec0; /* Lighter placeholder text */
         }
         .ai-submit-button {
-            background-color: #6366f1; /* Purple */
+            background-color: #4f46e5; /* Stronger purple */
             color: white;
-            padding: 0.6rem 1.2rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
+            padding: 0.7rem 1.4rem; /* Larger padding */
+            border-radius: 0.75rem;
+            font-weight: 700; /* Bolder */
             cursor: pointer;
-            transition: background-color 0.2s ease-in-out;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
             border: none;
-            margin-top: 0.75rem;
-            margin-right: auto; /* Align to the left (start in RTL) */
+            margin-top: 1rem;
+            margin-right: auto;
             margin-left: 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .ai-submit-button:hover {
-            background-color: #4f46e5; /* Darker purple on hover */
+            background-color: #3f36c5; /* Darker purple on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+        .ai-loading-spinner {
+            color: #6366f1;
+            font-weight: 600;
+            margin-top: 1rem;
         }
         .ai-answer {
-            background-color: #f9fafb; /* Lighter gray background for answer */
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1rem;
-            color: #374151; /* Darker gray text */
-            font-size: 0.95rem;
-            line-height: 1.5;
-            white-space: pre-wrap; /* Preserve whitespace and line breaks */
+            background-color: #e0f2fe; /* Light blue background for answer */
+            border: 1px solid #90cdf4; /* Blue border */
+            border-radius: 0.75rem;
+            padding: 1.2rem; /* More padding */
+            margin-top: 1.5rem;
+            color: #2c5282; /* Dark blue text */
+            font-size: 1rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Inner shadow */
         }
         .footer {
             text-align: center;
-            padding: 2rem;
-            margin-top: 2rem;
-            background-color: #e5e7eb; /* Light gray for footer */
-            color: #4b5563; /* Medium gray text */
-            border-top-left-radius: 1rem;
-            border-top-right-radius: 1rem;
-            font-size: 0.9rem;
+            padding: 2.5rem;
+            margin-top: 3rem;
+            background-color: #d1d5db; /* Darker gray for footer */
+            color: #374151; /* Darker gray text */
+            border-top-left-radius: 1.5rem;
+            border-top-right-radius: 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.1);
         }
 
         /* Responsive adjustments for smaller screens */
         @media (max-width: 768px) {
             .header h1 {
-                font-size: 2rem;
+                font-size: 2.5rem;
+            }
+            .header p {
+                font-size: 1rem;
             }
             .container {
                 padding: 1rem;
@@ -236,16 +280,21 @@
                 padding: 1rem;
             }
             .news-title {
-                font-size: 1.25rem;
+                font-size: 1.3rem;
             }
             .news-content {
-                font-size: 0.9rem;
+                font-size: 0.95rem;
             }
             .report-button, .ai-ask-toggle-button, .ai-submit-button {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.75rem;
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
             }
             .ai-question-input, .ai-answer {
+                font-size: 0.9rem;
+                padding: 0.75rem;
+            }
+            .footer {
+                padding: 1.5rem;
                 font-size: 0.85rem;
             }
         }
@@ -282,7 +331,7 @@
     </div>
 
     <footer class="footer">
-        <p>© כל הזכויות שמורות לאלי כהן תכנות</p>
+        <p>© כל הזכויות שמורות לאלי כהן</p>
     </footer>
 
     <script type="module">
@@ -293,6 +342,10 @@
         const messageBoxTitle = document.getElementById('message-box-title');
         const messageBoxContent = document.getElementById('message-box-content');
         const messageBoxCloseButton = document.getElementById('message-box-close-button');
+
+        // *** חשוב: החלף את YOUR_APPS_SCRIPT_WEB_APP_URL בכתובת ה-URL שקיבלת בשלב 3 ***
+        const APPS_SCRIPT_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbz9KgYzsTLSijvkbgpuKWO8Av5KXkZDAabMXP4e2MJvwRJKRWfW3bT7jbNw4Lky9MLLWA/exec';
+
 
         /**
          * Displays a custom message box to the user.
@@ -416,154 +469,93 @@
 
 
         /**
-         * Fetches real news articles by searching and then summarizing with Gemini API.
+         * Fetches news articles from the deployed Google Apps Script backend.
          */
         async function fetchNews() {
             loadingIndicator.classList.remove('hidden'); // Show loading spinner
             errorMessage.classList.add('hidden'); // Hide error message
 
+            // Check if the placeholder URL is still present
+            if (APPS_SCRIPT_BACKEND_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL') {
+                errorMessage.textContent = 'שגיאה: אנא החלף את "YOUR_APPS_SCRIPT_WEB_APP_URL" בכתובת ה-URL האמיתית של יישום ה-Apps Script שלך בקוד ה-JavaScript.';
+                errorMessage.classList.remove('hidden');
+                loadingIndicator.classList.add('hidden');
+                return; // Stop execution if URL is not set
+            }
+
             try {
                 // Clear previous news content
                 newsContainer.innerHTML = '';
 
-                // This is placeholder data for searchResults.
-                // In a real execution, this would be replaced by the real output from the tool_code block.
-                const searchResults = [
-                    {
-                        query: 'latest news headlines in Hebrew',
-                        results: [
-                            { snippet: 'Israel National News - Netanyahu to Iranians: \'Rising Lion\' paves way for your freedom.' },
-                            { snippet: 'Ynetnews - US deploys dozens of refueling jets east, sparking speculation over role in Israel-Iran clash.' },
-                            { snippet: 'Israel Hayom - טיסת חילוץ ראשונה לקצינים נחתה בישראל לפני שעה קלה.' },
-                            { snippet: 'i24NEWS - Tensions erupt at Hebrew University as students clash over Gaza.' },
-                            { snippet: 'i24NEWS - Iran may leave Nuclear Non-Proliferation Treaty as parliament drafts exit bill.' },
-                            { snippet: 'The Times of Israel - 4 killed in Petah Tikva, 3 in Haifa, 1 in Bnei Brak; US embassy branch in Tel Aviv lightly damaged.' },
-                            { snippet: 'The Jerusalem Post - 700% spike in cyberattacks on Israel since strike on Iran - Radware.' },
-                            { snippet: 'ynetnews - IDF on alarm in Aloni Bashan in Golan: Drone launched from Iran intercepted.' },
-                        ]
-                    },
-                    {
-                        query: 'חדשות אחרונות כותרות',
-                        results: [
-                            { snippet: 'וואלה חדשות - רגב: מבצע "חזרה בטוחה" יוצא לדרך - השבת הישראלים מחו"ל.' },
-                            { snippet: 'כאן 11 - הותר לפרסום שמו של הרוג נוסף מפגיעת הטיל בבת ים: מאיר (מירו) ווקנין (56).' },
-                            { snippet: 'ישראל היום - שרי החוץ של האיחוד האירופי ידונו במלחמה בין ישראל לאיראן.' },
-                            { snippet: 'ynet - דיווח באיראן על פיצוצים במערב טהרן.' },
-                            { snippet: 'Maariv - מבזקי חדשות היום, מבזקים וידיעות בזמן אמת עכשיו במעריב אונליין.' },
-                            { snippet: 'חדשות עכשיו - מטח כבד מאיראן והרס בלתי נתפס: 4 הרוגים בפתח תקווה ובבני ברק.' },
-                        ]
-                    }
-                ];
-
-                // Prepare the search results for the AI prompt
-                const formattedSearchResults = searchResults.map(res => {
-                    const snippets = res.results.map(item => item.snippet).filter(Boolean).join('\n');
-                    return `Query: "${res.query}"\nSnippets:\n${snippets}`;
-                }).join('\n\n');
-
-
-                // Prompt for the AI to summarize real news articles based on search results
-                const prompt = `Based on the following real news snippets, generate 5 concise news articles in Hebrew. Each article should have a 'title' and 'content' that summarizes a distinct news event from the snippets. Focus on current events. Respond only with a JSON array of these articles.
-                \n\nNews Snippets:\n${formattedSearchResults}`;
-
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-
-                const payload = {
-                    contents: chatHistory,
-                    generationConfig: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: "ARRAY",
-                            items: {
-                                type: "OBJECT",
-                                properties: {
-                                    "title": { "type": "STRING" },
-                                    "content": { "type": "STRING" }
-                                },
-                                "propertyOrdering": ["title", "content"]
-                            }
-                        }
-                    }
-                };
-
-                // The API key is managed by the environment, so it's left as an empty string.
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
+                // --- NEW: Fetching from your Google Apps Script Web App ---
+                const response = await fetch(APPS_SCRIPT_BACKEND_URL);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorData = await response.json().catch(() => ({ message: "Unknown backend error" }));
+                    throw new Error(`שגיאה בגישה לשרת החדשות: ${response.status} - ${errorData.message || response.statusText}`);
+                }
+                const newsArticles = await response.json(); // Apps Script returns summarized news directly
+
+                if (newsArticles.error) {
+                    throw new Error(`שגיאה מהשרת: ${newsArticles.error}`);
                 }
 
-                const result = await response.json();
+                if (!Array.isArray(newsArticles) || newsArticles.length === 0) {
+                    newsContainer.innerHTML = '<p class="text-gray-500 text-center mt-8">אין חדשות חדשות כרגע. נסה שוב מאוחר יותר.</p>';
+                    return;
+                }
 
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-
-                    const jsonText = result.candidates[0].content.parts[0].text;
-                    const newsArticles = JSON.parse(jsonText);
-
-                    // Render the news articles
-                    newsArticles.forEach((article, index) => {
-                        const newsCard = document.createElement('div');
-                        const newsId = `news-${Date.now()}-${index}`;
-                        newsCard.setAttribute('data-id', newsId);
-                        newsCard.classList.add('news-card');
-                        newsCard.innerHTML = `
-                            <h2 class="news-title">${article.title}</h2>
-                            <p class="news-content">${article.content}</p>
-                            <button class="report-button">תוכן לא ראוי? לחץ כאן לדיווח</button>
-                            <div class="ai-interaction-section mt-4 pt-4 border-t border-gray-200">
-                                <button class="ai-ask-toggle-button">✨ שאל את ה-AI</button>
-                                <div class="ai-query-area hidden">
-                                    <textarea class="ai-question-input w-full p-2 border rounded-md resize-y" rows="3" placeholder="שאל שאלה על הכתבה הזו..."></textarea>
-                                    <button class="ai-submit-button">שאל</button>
-                                    <div class="ai-loading-spinner hidden mt-2 flex justify-center">
-                                        <div class="spinner"></div>
-                                    </div>
-                                    <div class="ai-answer mt-4 p-3 bg-gray-50 rounded-md border border-gray-200">
-                                        <!-- AI answer will be displayed here -->
-                                    </div>
+                // Render the news articles received from the Apps Script backend
+                newsArticles.forEach((article, index) => {
+                    const newsCard = document.createElement('div');
+                    // Ensure unique ID for each card
+                    const newsId = `news-${Date.now()}-${index}`;
+                    newsCard.setAttribute('data-id', newsId);
+                    newsCard.classList.add('news-card');
+                    newsCard.innerHTML = `
+                        <h2 class="news-title">${article.title}</h2>
+                        <p class="news-content">${article.content}</p>
+                        <button class="report-button">תוכן לא ראוי? לחץ כאן לדיווח</button>
+                        <div class="ai-interaction-section mt-4 pt-4 border-t border-gray-200">
+                            <button class="ai-ask-toggle-button">✨ שאל את ה-AI</button>
+                            <div class="ai-query-area hidden">
+                                <textarea class="ai-question-input w-full p-2 border rounded-md resize-y" rows="3" placeholder="שאל שאלה על הכתבה הזו..."></textarea>
+                                <button class="ai-submit-button">שאל</button>
+                                <div class="ai-loading-spinner hidden mt-2 flex justify-center">
+                                    <div class="spinner"></div>
+                                </div>
+                                <div class="ai-answer mt-4 p-3 bg-gray-50 rounded-md border border-gray-200">
+                                    <!-- AI answer will be displayed here -->
                                 </div>
                             </div>
-                        `;
-                        newsContainer.appendChild(newsCard);
+                        </div>
+                    `;
+                    newsContainer.appendChild(newsCard);
 
-                        // Attach event listener to the report button
-                        const reportButton = newsCard.querySelector('.report-button');
-                        reportButton.addEventListener('click', () => handleReport(newsId, article.title));
+                    // Attach event listener to the report button
+                    const reportButton = newsCard.querySelector('.report-button');
+                    reportButton.addEventListener('click', () => handleReport(newsId, article.title));
 
-                        // Attach event listeners for the AI interaction feature
-                        const aiAskToggleButton = newsCard.querySelector('.ai-ask-toggle-button');
-                        const aiQueryArea = newsCard.querySelector('.ai-query-area');
-                        const aiQuestionInput = newsCard.querySelector('.ai-question-input');
-                        const aiSubmitButton = newsCard.querySelector('.ai-submit-button');
-                        const aiLoadingSpinner = newsCard.querySelector('.ai-loading-spinner');
-                        const aiAnswerDiv = newsCard.querySelector('.ai-answer');
+                    // Attach event listeners for the AI interaction feature
+                    const aiAskToggleButton = newsCard.querySelector('.ai-ask-toggle-button');
+                    const aiQueryArea = newsCard.querySelector('.ai-query-area');
+                    const aiQuestionInput = newsCard.querySelector('.ai-question-input');
+                    const aiSubmitButton = newsCard.querySelector('.ai-submit-button');
+                    const aiLoadingSpinner = newsCard.querySelector('.ai-loading-spinner');
+                    const aiAnswerDiv = newsCard.querySelector('.ai-answer');
 
-                        aiAskToggleButton.addEventListener('click', () => toggleAIInteraction(aiQueryArea));
-                        aiSubmitButton.addEventListener('click', () => askAIAboutNews(article.content, aiQuestionInput, aiAnswerDiv, aiLoadingSpinner));
-                    });
-
-                } elnse {
-                    console.error("Unexpected API response structure:", result);
-                    errorMessage.classList.remove('hidden'); // Show error message if response is malformed
-                }
+                    aiAskToggleButton.addEventListener('click', () => toggleAIInteraction(aiQueryArea));
+                    aiSubmitButton.addEventListener('click', () => askAIAboutNews(article.content, aiQuestionInput, aiAnswerDiv, aiLoadingSpinner));
+                });
 
             } catch (error) {
-                console.error("Error fetching news:", error);
+                console.error("Error fetching news from Apps Script backend:", error);
+                errorMessage.textContent = `שגיאה בטעינת החדשות: ${error.message}. אנא ודא שיישום ה-Apps Script פרוס כראוי ושכתובת ה-URL נכונה.`;
                 errorMessage.classList.remove('hidden'); // Show error message on fetch failure
             } finally {
                 loadingIndicator.classList.add('hidden'); // Hide loading spinner
             }
         }
+
 
         // Fetch news immediately when the page loads
         document.addEventListener('DOMContentLoaded', fetchNews);
@@ -573,4 +565,3 @@
     </script>
 </body>
 </html>
-
