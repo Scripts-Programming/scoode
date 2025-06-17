@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ניצחון מוחלט | ב-AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Heebo', sans-serif;
+      background-color: #f8fafc;
+      color: #1a202c;
+    }
+    header {
+      background: linear-gradient(90deg, #2b2d42, #8d99ae);
+      color: white;
+      padding: 2.5rem 1rem;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      border-bottom: 4px solid #ef233c;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.8rem;
+      letter-spacing: 1px;
+    }
+    header p {
+      margin: 1rem 0 0;
+      font-size: 1.2rem;
+      color: #f0f0f0;
+    }
+    .status-bar {
+      background-color: #ef233c;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-weight: bold;
+      font-size: 1.05rem;
+      letter-spacing: 0.5px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2.5rem auto;
+      padding: 1.5rem;
+    }
+    .news-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+      margin-bottom: 2.5rem;
+      padding: 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .news-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .timestamp {
+      font-size: 0.95rem;
+      color: #6b7280;
+      margin-bottom: 1rem;
+    }
+    .news-content {
+      font-size: 1.15rem;
+      line-height: 1.85;
+    }
+    .loading {
+      text-align: center;
+      color: #6b7280;
+      font-weight: 600;
+    }
+    .error-message {
+      background-color: #ffe6e6;
+      color: #c53030;
+      padding: 1.2rem;
+      border-radius: 8px;
+      text-align: center;
+      margin-top: 2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .alert {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-weight: bold;
+      animation: blink 1.5s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ניצחון מוחלט | ב-AI</h1>
+    <p>מרכז החדשות החכם - עדכונים חכמים, אוטומטיים וללא הפסקה</p>
+  </header>
+
+  <div class="status-bar">
+    🚨 עדכון חי כל דקה • מופעל אוטומטית על ידי בינה מלאכותית
+    <span id="lastUpdate">| שעה: --:--:--</span>
+  </div>
+
+  <div class="container">
+    <div class="news-card">
+      <div id="newsContent" class="news-content loading">טוען חדשות...</div>
+    </div>
+  </div>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('lastUpdate').textContent = `| שעה: ${now.toLocaleTimeString('he-IL')}`;
+    }
+
+    function formatText(text) {
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+    }
+
+    function fetchNews() {
+      const container = document.getElementById('newsContent');
+      container.innerHTML = 'טוען חדשות...';
+
+      fetch('https://script.google.com/macros/s/AKfycbz9KgYzsTLSijvkbgpuKWO8Av5KXkZDAabMXP4e2MJvwRJKRWfW3bT7jbNw4Lky9MLLWA/exec')
+        .then(res => res.json())
+        .then(data => {
+          const newsHtml = `
+            <div class="timestamp">עודכן: ${new Date().toLocaleString('he-IL')}</div>
+            ${formatText(data.text)}
+          `;
+          container.innerHTML = newsHtml;
+
+          if (data.text.includes('בהול') || data.text.includes('מתקפה')) {
+            const alert = document.createElement('div');
+            alert.className = 'alert';
+            alert.textContent = '⚡ עדכון חשוב: נא לשים לב!';
+            container.prepend(alert);
+          }
+        })
+        .catch(err => {
+          container.innerHTML = `<div class="error-message">אירעה שגיאה: ${err.message}</div>`;
+        });
+    }
+
+    fetchNews();
+    setInterval(fetchNews, 60000);
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
