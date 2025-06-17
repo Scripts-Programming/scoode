@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>עדכון מבזקים</title>
+  <style>
+/* public/style.css */
+
+/* כללי בסיס */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* פונט מודרני יותר */
+    margin: 0;
+    padding: 0;
+    background-color: #eef2f7; /* רקע בהיר ונעים */
+    color: #333;
+    direction: rtl; /* כיוון כתיבה מימין לשמאל */
+    line-height: 1.6;
+}
+
+/* כותרת עליונה (Header) */
+header {
+    background-color: #2c3e50; /* כחול כהה אלגנטי */
+    color: white;
+    padding: 1.5em 0;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* צל עדין לתלת מימד */
+    position: sticky; /* נשאר בראש העמוד בגלילה */
+    top: 0;
+    z-index: 1000;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.8em;
+    letter-spacing: 1.5px; /* מרווח בין אותיות */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* צל לכותרת */
+}
+
+/* אזור תוכן ראשי */
+main {
+    width: 90%; /* רחב יותר */
+    max-width: 960px; /* רוחב מקסימלי כדי למנוע מתיחה בעמודים רחבים מאוד */
+    margin: 30px auto; /* מרווח גדול יותר מלמעלה ולמטה */
+    padding: 25px;
+    background-color: white;
+    border-radius: 10px; /* פינות מעוגלות */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* צל בולט יותר */
+}
+
+/* עיצוב מבזק בודד */
+.news-item {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* צל קל לכל מבזק */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* אנימציית ריחוף */
+}
+
+.news-item:hover {
+    transform: translateY(-5px); /* ריחוף קל בעת מעבר עכבר */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* צל מודגש יותר בריחוף */
+}
+
+.news-item h2 {
+    color: #3498db; /* כחול בהיר למשיכת עין */
+    margin-top: 0;
+    font-size: 1.8em;
+    border-bottom: 2px solid #3498db; /* קו תחתון לכותרת */
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.news-item p {
+    color: #555;
+    font-size: 1.1em;
+    line-height: 1.8;
+}
+
+.news-item small {
+    display: block; /* תאריך בשורה נפרדת */
+    text-align: left; /* תאריך מיושר לשמאל */
+    color: #888;
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+/* הודעה כשאין מבזקים */
+.no-news-message {
+    text-align: center;
+    font-size: 1.2em;
+    color: #666;
+    padding: 30px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    border: 1px dashed #ccc;
+}
+
+/* עיצוב טופס (ל-admin.html) */
+form {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
+form input[type="text"],
+form textarea {
+    width: calc(100% - 20px); /* התאמה לריפוד */
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    transition: border-color 0.3s ease-in-out;
+}
+
+form input[type="text"]:focus,
+form textarea:focus {
+    border-color: #3498db; /* הדגשת גבול בפוקוס */
+    outline: none; /* הסרת קו מתאר ברירת מחדל */
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+form textarea {
+    resize: vertical; /* מאפשר שינוי גודל אנכי בלבד */
+    min-height: 120px;
+}
+
+form button {
+    background-color: #28a745; /* ירוק לכפתור אישור */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease;
+}
+
+form button:hover {
+    background-color: #218838; /* ירוק כהה יותר בריחוף */
+    transform: translateY(-2px); /* אפקט לחיצה קל */
+}
+
+/* כותרת תחתונה (Footer) */
+footer {
+    text-align: center;
+    padding: 1.5em 0;
+    background-color: #2c3e50;
+    color: white;
+    margin-top: 40px;
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2); /* צל בחלק התחתון */
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+/* עיצוב רספונסיבי למסכים קטנים */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2em;
+    }
+
+    main {
+        width: 95%;
+        margin: 20px auto;
+        padding: 15px;
+    }
+
+    .news-item h2 {
+        font-size: 1.5em;
+    }
+
+    .news-item p {
+        font-size: 1em;
+    }
+
+    form input[type="text"],
+    form textarea,
+    form button {
+        width: 100%;
+        box-sizing: border-box; /* כולל ריפוד וגבול ברוחב */
+    }
+}
+</style>
+</head>
+<body>
+    <header>
+        <h1>עדכון מבזקי חדשות</h1>
+    </header>
+    <main>
+        <form id="news-form">
+            <label for="news-title">כותרת המבזק:</label><br>
+            <input type="text" id="news-title" name="news-title" required><br><br>
+
+            <label for="news-content">תוכן המבזק:</label><br>
+            <textarea id="news-content" name="news-content" rows="5" required></textarea><br><br>
+
+            <button type="submit">הוסף מבזק</button>
+        </form>
+    </main>
+    <footer>
+        <p>&copy; 2025 כל הזכויות שמורות</p>
+    </footer>
+    <script>
+        // public/admin.js
+document.addEventListener('DOMContentLoaded', () => {
+    const newsForm = document.getElementById('news-form');
+
+    if (newsForm) {
+        newsForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); // מונע שליחה רגילה של הטופס
+
+            const title = document.getElementById('news-title').value;
+            const content = document.getElementById('news-content').value;
+
+            try {
+                const response = await fetch('/api/news', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+
+                if (response.ok) {
+                    alert('מבזק נוסף בהצלחה!');
+                    newsForm.reset(); // איפוס הטופס
+                    // ניתן להפנות לעמוד הראשי או לרענן
+                } else {
+                    const errorData = await response.json();
+                    alert(`שגיאה בהוספת מבזק: ${errorData.message || response.statusText}`);
+                }
+            } catch (error) {
+                console.error('שגיאה:', error);
+                alert('אירעה שגיאה בעת שליחת הטופס.');
+            }
+        });
+    }
+});
+    </script>
+</body>
+</html>
