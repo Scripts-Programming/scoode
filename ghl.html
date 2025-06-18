@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הצטרפות לקבוצת Google Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-r from-blue-100 to-purple-100 flex justify-center items-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md transition-transform hover:scale-105">
+        <h1 class="text-2xl font-semibold text-blue-600 text-center mb-6">הצטרף לקבוצת ה-Chat שלנו!</h1>
+        <form id="subscriptionForm" class="space-y-4">
+            <div>
+                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">כתובת האימייל שלך:</label>
+                <input type="email" id="email" name="email" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div id="feedback" class="mt-4 p-3 rounded-md hidden"></div>
+            <button type="submit" id="submitButton" class="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out">
+                <span id="buttonText">הצטרף לקבוצה</span>
+                <span id="buttonSpinner" class="hidden">מעבד...</span>
+            </button>
+        </form>
+        <p class="text-gray-600 text-xs text-center mt-4">הזנת כתובת האימייל שלך תצרף אותך אוטומטית לקבוצה.</p>
+    </div>
+
+    <script>
+        const form = document.getElementById('subscriptionForm');
+        const feedback = document.getElementById('feedback');
+        const submitButton = document.getElementById('submitButton');
+        const buttonText = document.getElementById('buttonText');
+        const buttonSpinner = document.getElementById('buttonSpinner');
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+
+            if (!isValidEmail(email)) {
+                displayMessage('אנא הזן כתובת אימייל חוקית.', 'error');
+                return;
+            }
+            
+            setLoading(true);
+
+            // !!! חשוב !!!
+            // יש להחליף את הכתובת הזו בכתובת ה-Webhook שתקבל מ-Zapier בשלב 1 של המדריך
+            const zapierWebhookUrl = 'YOUR_ZAPIER_WEBHOOK_URL_HERE'; 
+
+            fetch(zapierWebhookUrl, {
+                method: 'POST',
+                // אין צורך ב-headers כאן, Zapier מזהה את ה-JSON אוטומטית
+                body: JSON.stringify({ email: email })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    displayMessage('תודה! צורפת בהצלחה לקבוצה.', 'success');
+                    form.reset();
+                } else {
+                     displayMessage('אירעה שגיאה בתהליך הרישום. אנא נסה שוב מאוחר יותר.', 'error');
+                }
+            })
+            .catch(error => {
+                displayMessage('אירעה שגיאת תקשורת. אנא בדוק את חיבור האינטרנט ונסה שוב.', 'error');
+                console.error('Fetch error:', error);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+        });
+        
+        function setLoading(isLoading) {
+            if (isLoading) {
+                submitButton.disabled = true;
+                buttonText.classList.add('hidden');
+                buttonSpinner.classList.remove('hidden');
+            } else {
+                submitButton.disabled = false;
+                buttonText.classList.remove('hidden');
+                buttonSpinner.classList.add('hidden');
+            }
+        }
+
+        function displayMessage(message, type) {
+            feedback.textContent = message;
+            feedback.className = `mt-4 p-3 rounded-md text-center ${type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+            feedback.classList.remove('hidden');
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+            return emailRegex.test(email);
+        }
+    </script>
+</body>
+</html>
