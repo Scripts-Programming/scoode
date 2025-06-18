@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>צ'אט Sbh</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-dark.min.css" rel="stylesheet"/>
-    <link rel="icon" href="https://img.lovepik.com/element/45004/6135.png_860.png" type="image/png"> <style>
+    <link rel="icon" href="https://img.lovepik.com/element/45004/6135.png_860.png" type="image/png">
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -48,6 +49,12 @@
             font-size: 24px;
             color: #00ddeb;
             text-shadow: 0 0 10px rgba(0, 221, 235, 0.5);
+            margin-bottom: 5px; /* Added spacing */
+        }
+
+        .chat-header p { /* New style for experimental version text */
+            font-size: 14px;
+            color: #a0a0a0;
         }
 
         .chat-box {
@@ -190,6 +197,13 @@
             animation: typing 1s infinite;
         }
 
+        .warning-text { /* New style for warning text */
+            color: #ffda79; /* A light yellow/orange for warnings */
+            font-size: 13px;
+            margin-bottom: 5px; /* Spacing above copyright */
+            text-align: center;
+        }
+
         .footer {
             margin-top: 20px;
             color: #a0a0a0;
@@ -240,12 +254,15 @@
 <div class="chat-container">
     <div class="chat-header">
         <h1>צ'אט Sbh</h1>
-    </div>
+        <p>זאת גרסה ניסיונית ומוגבלת...</p> </div>
     <div class="chat-box" id="chat-box"></div>
     <div class="input-container">
         <input type="text" id="user-input" placeholder="שאל כל דבר...">
         <button id="send-button">שלח</button>
     </div>
+</div>
+<div class="warning-text">
+    Sbh עלול לטעות, לכן יש לוודא היטב את נכונות התשובות שלו.
 </div>
 <div class="footer">
     © כל הזכויות שמורות לאלי כ.
@@ -393,4 +410,3 @@
 </script>
 </body>
 </html>
-
