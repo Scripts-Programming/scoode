@@ -112,83 +112,73 @@
     כל הזכויות שמורות לאלי כ.
   </footer>
 
-  <script>
-    const chatDiv = document.getElementById('chat');
-    const inputText = document.getElementById('inputText');
-    const sendBtn = document.getElementById('sendBtn');
+<script>
+  const chatDiv = document.getElementById('chat');
+  const inputText = document.getElementById('inputText');
+  const sendBtn = document.getElementById('sendBtn');
 
-    const apiKey = "AIzaSyBXd993D827L4-VFtad7bnI7o_Kxq-_yqk"; // ודא שה־API הזה פעיל
+  const apiKey = "AIzaSyBXd993D827L4-VFtad7bnI7o_Kxq-_yqk";
 
-    function addMessage(text, sender) {
-      const msgDiv = document.createElement('div');
-      msgDiv.classList.add('message', sender);
-      msgDiv.textContent = text;
-      chatDiv.appendChild(msgDiv);
-      chatDiv.scrollTop = chatDiv.scrollHeight;
+  function addMessage(text, sender) {
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('message', sender);
+    msgDiv.textContent = text;
+    chatDiv.appendChild(msgDiv);
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+  }
+
+  async function sendMessage(promptText) {
+    addMessage(promptText, 'user');
+
+    const lower = promptText.toLowerCase();
+    if (lower.includes('מי בנה אותך') || lower.includes('מי תכנת אותך') || lower.includes('מי יצר אותך')) {
+      addMessage('אני נבניתי על ידי אלי כהן.', 'bot');
+      return;
     }
 
-    async function sendMessage(promptText) {
-      addMessage(promptText, 'user');
-
-      const lower = promptText.toLowerCase();
-
-      if (lower.includes('מי בנה אותך') || lower.includes('מי תכנת אותך') || lower.includes('מי יצר אותך')) {
-        addMessage('אני נבניתי על ידי אלי כהן.', 'bot');
-        return;
-      }
-
-      if (
-        lower.includes('מה השם שלך') ||
-        lower.includes('מי אתה') ||
-        lower.includes('מי את') ||
-        lower.includes('מי אתה?') ||
-        lower.includes('מי את?')
-      ) {
-        addMessage("קוראים לי צ'אט Sbh.", 'bot');
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [
-                {
-                  parts: [{ text: promptText }],
-                  role: "user"
-                }
-              ]
-            })
-          }
-        );
-
-        const data = await response.json();
-        const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "❌ לא התקבלה תשובה מה-AI";
-        addMessage(aiResponse, 'bot');
-      } catch (error) {
-        console.error(error);
-        addMessage("אירעה שגיאה בעת בקשת התשובה מהשרת.", 'bot');
-      }
+    if (
+      lower.includes('מה השם שלך') ||
+      lower.includes('מי אתה') ||
+      lower.includes('מי את') ||
+      lower.includes('מי אתה?') ||
+      lower.includes('מי את?')
+    ) {
+      addMessage("קוראים לי צ'אט Sbh.", 'bot');
+      return;
     }
 
-    sendBtn.addEventListener('click', () => {
-      const text = inputText.value.trim();
-      if (!text) return;
-      sendMessage(text);
-      inputText.value = '';
-      inputText.focus();
-    });
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [{ text: promptText }],
+                role: "user"
+              }
+            ]
+          })
+        }
+      );
 
-    inputText.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        sendBtn.click();
-      }
-    });
-  </script>
+      const data = await response.json();
+      console.log("🔎 תשובת Gemini:", data);
 
+      const aiResponse =
+        data.candidates?.[0]?.content?.parts?.[0]?.text ||
+        data.candidates?.[0]?.content?.parts?.[0] ||
+        data.candidates?.[0]?.content?.text ||
+        "❌ לא התקבלה תשובה מה-AI";
+
+      addMessage(aiResponse, 'bot');
+
+    } catch (error) {
+      console.error(error);
+      addMessage("❗ אירעה שגיאה בעת בקשת התשובה מהשרת.", 'bot')
+    </script>
 </body>
 </html>
 
