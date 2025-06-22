@@ -128,7 +128,7 @@
       const container = document.getElementById('newsContent');
       container.innerHTML = 'טוען חדשות...';
 
-      fetch('https://script.google.com/macros/s/AKfycbz9KgYzsTLSijvkbgpuKWO8Av5KXkZDAabMXP4e2MJvwRJKRWfW3bT7jbNw4Lky9MLLWA/exec')
+fetch('ai-news.php')
         .then(res => res.json())
         .then(data => {
           const newsHtml = `
