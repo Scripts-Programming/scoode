@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>טופס הרשמה לקייטנה דיגיטלית</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        select,
+        textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input[type="checkbox"] {
+            margin-left: 5px;
+        }
+        .checkbox-group label {
+            font-weight: normal;
+            display: inline-block;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .agreement {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>הרשמה לקייטנה דיגיטלית</h2>
+        <form action="submit_form.php" method="POST">
+            <div class="form-group">
+                <label for="fullName">שם מלא של הילד/ה:</label>
+                <input type="text" id="fullName" name="fullName" required>
+            </div>
+            <div class="form-group">
+                <label for="dob">תאריך לידה:</label>
+                <input type="date" id="dob" name="dob" required>
+            </div>
+            <div class="form-group">
+                <label for="parentName">שם מלא של ההורה/אפוטרופוס:</label>
+                <input type="text" id="parentName" name="parentName" required>
+            </div>
+            <div class="form-group">
+                <label for="email">כתובת אימייל (של ההורה):</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">מספר טלפון (של ההורה):</label>
+                <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" placeholder="לדוגמה: 0501234567" required>
+            </div>
+            <div class="form-group">
+                <label for="grade">כיתה עולה:</label>
+                <select id="grade" name="grade" required>
+                    <option value="">בחר כיתה</option>
+                    <option value="א">א</option>
+                    <option value="ב">ב</option>
+                    <option value="ג">ג</option>
+                    <option value="ד">ד</option>
+                    <option value="ה">ה</option>
+                    <option value="ו">ו</option>
+                    <option value="ז">ז</option>
+                    <option value="ח">ח</option>
+                    <option value="ט">ט</option>
+                    <option value="י">י</option>
+                    <option value="יא">יא</option>
+                    <option value="יב">יב</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="interests">תחומי עניין דיגיטליים (אופציונלי):</label>
+                <textarea id="interests" name="interests" rows="4" placeholder="לדוגמה: תכנות, עיצוב גרפי, עריכת וידאו, משחקים..."></textarea>
+            </div>
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label for="terms">אני מאשר/ת את <a href="#" target="_blank">תנאי השימוש ומדיניות הפרטיות</a>.</label>
+            </div>
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="newsletter" name="newsletter">
+                <label for="newsletter">אני רוצה לקבל עדכונים ומבצעים עתידיים.</label>
+            </div>
+            <button type="submit">שלח הרשמה</button>
+            <div class="agreement">
+                <p>על ידי לחיצה על "שלח הרשמה", אני מאשר/ת את כל הפרטים שהוזנו.</p>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
