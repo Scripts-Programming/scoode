@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>כיתה ו' - תלמוד תורה</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      background: #eef3f9;
+      font-family: sans-serif;
+      text-align: center;
+      direction: rtl;
+      padding: 30px;
+    }
+    header {
+      background-color: #0055aa;
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    section {
+      background: white;
+      padding: 20px;
+      margin: auto;
+      max-width: 700px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    button {
+      background-color: #0055aa;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>ברוכים הבאים לאתר של כיתה ו'</h1>
+      <p>תלמוד תורה חב"ד</p>
+    </header>
+
+    <section>
+      <h2>פעילות השבוע</h2>
+      <ul style="text-align:right; padding-right: 30px;">
+        <li v-for="item in schedule">{{ item }}</li>
+      </ul>
+      <button @click="sayHello">לחץ לברכה</button>
+    </section>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          schedule: [
+            "יום ראשון: תנ\"ך וגמרא",
+            "יום שני: חשבון ולשון",
+            "יום שלישי: מדעים והלכה",
+            "יום רביעי: היסטוריה ויצירה",
+            "יום חמישי: חזרה ושיעור שבועי"
+          ]
+        }
+      },
+      methods: {
+        sayHello() {
+          alert("ברוך הבא לאתר שלנו :)");
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
