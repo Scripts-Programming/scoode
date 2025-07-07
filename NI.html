@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ניהול מערכת טלפונית</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="icon" type="image/png" href="res/favicon64v2.png" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link href="res/jquery-ui-css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet" />
+    <link rel="stylesheet" href="res/font-awesome-4.5.0/css/font-awesome.min.css">
+    <link href="res/ivr2/ivr2.css?6" rel="stylesheet" />
+    <link href="eit/universaluploader/universal/style.css" rel="stylesheet" />
+    <link href="res/style.css?28" rel="stylesheet" />
+    <link href="res/style_he.css?1" rel="stylesheet" />
+    <script>
+        window.isWapCustomer = false;
+    </script>
+    <script src="res/jquery-1.10.2.min.js"></script>
+    <script src="res/jquery-ui-1.10.0.min.js"></script>
+    <script src="res/jquery.ui.datepicker-he.js"></script>
+    <script type="text/javascript" src="eit/universaluploader/universal/universaluploader.js"></script>
+    <script type="text/javascript" src="eit/universaluploader/universal/Localization/language_he.js"></script>
+    <script src="res/scripts.js?10"></script>
+    <script>
+        function startTime() {
+            var today = new Date();
+            var h = today.getHours();
+            var m = today.getMinutes();
+            m = checkTime(m);
+            document.getElementById("YemotDate").innerHTML = (("0" + today.getDate()).slice(-2)) + "/" + (("0" + (today.getMonth() + 1)).slice(-2)) + "/" + (today.getFullYear());
+            document.getElementById('YemotTime').innerHTML = h + ":" + m;
+            var t = setTimeout(startTime, 500);
+        }
+
+        function checkTime(i) {
+            if (i < 10) {
+                i = "0" + i
+            }; // add zero in front of numbers < 10
+            return i;
+        }
+    </script>
+</head>
+<body>
+    <div id="wrapper" class="siteid-default">
+        <div id="BH">בס"ד</div>
+        <h1>ניהול מערכת טלפונית</h1>
+        <div style="min-height: 500px">&nbsp;</div>
+        <div class="admin-widget" id="login-widget" title="התחברות למערכת">
+            <form id="login_form" action="login.php" method="post">
+                <a id="admin-link-newsite" href="https://www.call2all.co.il/yemot-admin-g1/#/login">עבור לאתר החדש (גרסת בטא)</a>
+                <div style="margin: 20px">
+                    <div class="dialog-fld">
+                        <label for="admin-login-user">טלפון של המערכת:</label>
+                        <input id="admin-login-user" type="text" size="64" name="user" value="" />
+                    </div>
+                    <div class="dialog-fld">
+                        <label for="admin-login-pwd">סיסמה:</label>
+                        <input id="admin-login-pwd" type="password" name="password" size="15" value="" />
+                    </div>
+                    <div style="margin: 20px 0 0" id="login-form-wait">
+                        <img src="res/ajax-loader-small.gif" alt="אנא המתינו..." /> &nbsp;אנא המתינו...
+                    </div>
+                    <input id="login-form-submit" type="submit" value="התחבר" />
+                </div>
+                <div class="dialog-fld">
+                    <a style="color:blue;" href="reset_password.php">שכחתי סיסמה</a>
+                </div>
+            </form>
+        </div>
+        <script>
+            $(function() {
+                var submitted = false;
+                var dlg = $('#login-widget');
+                dlg.dialog({
+                    autoOpen: true,
+                    width: 550,
+                    modal: true,
+                    open: function() {
+                        $('#login-form-submit').hide();
+                        $('#login-form-wait').hide();
+                        dlg.next('.ui-dialog-buttonpane').find('button').button('enable');
+                    },
+                    buttons: {
+                        'התחבר': function() {
+                            dlg.next('.ui-dialog-buttonpane').find('button').button('disable');
+                            $('#login_form').submit();
+                        }
+                    },
+                    close: function() {
+                        if (!submitted) window.location.reload(true);
+                    }
+                });
+                dlg.on('submit', function() {
+                    $('#login-form-wait').show();
+                });
+            });
+        </script>
+    </div>
+    <div id="iframe-dialog" class="def-hidden" title="ביצוע תשלום">
+        <iframe src="" id="YMiframe" width="98%" marginwidth="0" height="98%" marginheight="0" align="middle" scrolling="auto"></iframe>
+    </div>
+    <script>
+        function iframeOpen(src) {
+            document.getElementById('YMiframe').setAttribute('src', src);
+            $('#iframe-dialog').dialog('open');
+        }
+    </script>
+    <div id="validation-dialog" class="def-hidden" title="אימות לקוח">
+        <div class="ui-state-highlight ui-corner-all" style="padding: .4em">
+            <em class="ui-icon ui-icon-info" style="float:right;margin: 5px 5px 20px"></em>
+            <span><b> על מנת לשמור על בטחון הלקוחות כדי לבצע רכישות יש לבצע אימות טלפוני. </b> <br> אנא הקישו מספר טלפון בו תוכלו לקבל שיחת אימות. אין צורך לענות לשיחת הטלפון אלא רק לזכור את 4 הספרות האחרונות של המספר ממנו קיבלתם את השיחה ולהקיש אותם בשדה האימות שיוצג לאחר שליחת השיחה <br></span>
+            <span><br>
+                <snap style='color:red'>שירות הרכישות ושיגור ההודעות ניתן על ידי חברת ״מרכזיה בע״מ״ והחיוב בכרטיס האשראי שלכם יהיה על שם חברת ״מרכזיה בע״מ״.</snap></span>
+        </div>
+        <div class="dialog-fld" id="verification-input">
+            <label for="verification-data-phone">טלפון:</label>
+            <input id="verification-data-phone" type="text" autocomplete="off" size="15" />
+        </div>
+        <div class="dialog-fld def-hidden" id="verification-input-code">
+            <label for="verification-data-code">קוד אימות:</label>
+            <input id="verification-data-code" type="text" autocomplete="off" size="15" />
+        </div>
+        <div id="verification-status" class="def-hidden ui-state-error ui-corner-all" style="padding: .4em">
+            <em class="ui-icon ui-icon-alert" style="float:right;margin: .1em .3em"></em>
+            <span></span>
+        </div>
+        <div style="margin: 20px 0 0" class="def-hidden" id="verification-wait">
+            <img src="res/ajax-loader-small.gif" alt="אנא המתינו..." /> &nbsp;אנא המתינו...
+        </div>
+    </div>
+    <script>
+        let customerValidationReID = null;
+        let customerValidationStatus = false;
+
+        function validationCustomer() {
+            $('#validation-dialog').dialog('open');
+        }
+    </script>
+    <div id="upload-widget-template" class="def-hidden">
+        <div class="ui-widget-header ui-corner-top upload-widget-header">
+            <em class="ui-icon"></em><span></span>
+        </div>
+        <div class="ui-widget-content ui-corner-bottom upload-widget-contents">
+            <div class="upload-widget-upload-status ui-corner-all ui-state-highlight def-hidden">
+                <em class="ui-icon ui-icon-info"></em><span></span>
+            </div>
+            <div class="upload-widget-status"></div>
+            <div class="upload-widget-buttons"></div>
+        </div>
+    </div>
+    <div id="audio-upload-dialog" class="def-hidden" title="העלאת קובץ שמע">
+        <div>
+            <p>
+                להעלאת הודעה חדשה יש לבחור קובץ שמע. ניתן להשתמש ברוב הפורמטים הפופולריים כגון MP3,WMA,WAV,OGG,FLAC ועוד.
+            </p>
+            <div class="dialog-fld">
+                <div class="label">העלאת קובץ עבור:</div>
+                <span id="audio-upload-dialog-label" style="font-weight: bold"></span>
+            </div>
+            <div class="dialog-fld" id="universal-uploader-container">
+            </div>
+        </div>
+        <div id="audio-upload-dialog-error" class="def-hidden ui-state-error ui-corner-all" style="padding: .4em">
+            <em class="ui-icon ui-icon-alert" style="float:right;margin: .1em .3em"></em>
+            <span>שגיאה בתהליך העלאת הקובץ!</span>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+    <div id="audio-delete-confirm-dialog" class="def-hidden" title="אישור מחיקה">
+        <p class="dialog-elm-message">
+            בחרת למחוק קובץ:<br /><b>XX</b><br /><br />נא לאשר את הפעולה.
+        </p>
+        <div class="dialog-elm-error def-hidden ui-state-error ui-corner-all" style="padding: .4em">
+            <em class="ui-icon ui-icon-alert" style="float:right;margin: .1em .3em"></em>
+            <span>תהליך מחיקת הקובץ נכשל</span>
+        </div>
+        <div class="dialog-elm-wait def-hidden">
+            <img src="res/ajax-loader-small.gif" alt="אנא המתינו..." /> &nbsp;אנא המתינו...
+        </div>
+    </div>
+    <div id="audioPlay" class="def-hidden"></div>
+    <script>
+        (function() {
+            var submitted = false
+            var iframedDlg = $('#iframe-dialog').dialog({
+                autoOpen: false,
+                width: 900,
+                height: 850,
+                modal: true,
+                open: function() {
+                    iframedDlg.next('.ui-dialog-buttonpane').find('button').button('enable');
+                },
+                buttons: {
+                    'בטל את הרכישה': function() {
+                        iframedDlg.next('.ui-dialog-buttonpane').find('button').button('disable');
+                        window.location.reload();
+                    }
+                },
+            });
+            var customerValidationDlg = $('#validation-dialog').dialog({
+                autoOpen: false,
+                width: 770,
+                modal: true,
+                open: function() {
+                    customerValidationDlg.verificationStep = "sendCall";
+                    var app_wait = $('#verification-wait');
+                    app_wait.hide();
+                    var status = $('#verification-status');
+                    status.hide();
+                    $('#verification-input-code').hide();
+                    customerValidationDlg.next('.ui-dialog-buttonpane').find('button').button('enable');
+                },
+                buttons: {
+                    'ביטול': function() {
+                        customerValidationDlg.dialog("close");
+                    },
+                    'אמת': function() {
+                        var status = $('#verification-status');
+                        status.hide();
+                        var app_wait = $('#verification-wait');
+                        app_wait.show();
+                        if (customerValidationDlg.verificationStep === "sendCall") {
+                            $.ajax({
+                                type: "POST",
+                                url: 'ws.php?ws=ValidationPay',
+                                data: {
+                                    action: 'sendCall',
+                                    phone: document.getElementById("verification-data-phone").value
+                                },
+                            }).done(function(resp) {
+                                if (resp.responseStatus === "OK") {
+                                    customerValidationDlg.verificationStep = "valid";
+                                    customerValidationReID = resp.reqId;
+                                    status.removeClass('ui-state-error').addClass('ui-state-highlight');
+                                    status.find('em').removeClass('ui-icon-alert').addClass('ui-icon-info');
+                                    var msg_code = 'שלחנו שיחה לאימות למספר הטלפון שהוקש, יש להקיש את 4 הספרות האחרונות של המספר ממנו קיבלתם את השיחה בשדה אימות';
+                                    status.find('span').text(msg_code);
+                                    status.slideDown(600);
+                                    app_wait.hide();
+                                    $('#verification-input-code').slideDown(600);
+                                } else {
+                                    status.removeClass('ui-state-highlight').addClass('ui-state-error');
+                                    status.find('em').removeClass('ui-icon-info').addClass('ui-icon-alert');
+                                    status.find('span').text(resp.message);
+                                    status.slideDown(600);
+                                    app_wait.hide();
+                                    $('#btnSubmit').show();
+                                }
+                            }).fail(function() {
+                                status.removeClass('ui-state-highlight').addClass('ui-state-error');
+                                status.find('em').removeClass('ui-icon-info').addClass('ui-icon-alert');
+                                status.find('span').text("לא ניתן להגיע לשרת בשלב זה.");
+                                status.slideDown(600);
+                                app_wait.hide();
+                                $('#btnSubmit').show();
+                            });
+                        } else if (customerValidationDlg.verificationStep === "valid") {
+                            $.ajax({
+                                type: "POST",
+                                url: 'ws.php?ws=ValidationPay',
+                                data: {
+                                    action: 'valid',
+                                    code: document.getElementById("verification-data-code").value,
+                                    reId: customerValidationReID
+                                },
+                            }).done(function(resp) {
+                                if (resp.responseStatus === "OK") {
+                                    customerValidationStatus = true;
+                                    status.removeClass('ui-state-error').addClass('ui-state-highlight');
+                                    status.find('em').removeClass('ui-icon-alert').addClass('ui-icon-info');
+                                    var msg_code = 'האימות בוצע בהצלחה. ניתן להגיש בקשת רכישה.';
+                                    status.find('span').text(msg_code);
+                                    status.slideDown(600);
+                                    setTimeout(function() {
+                                        customerValidationDlg.dialog("close");
+                                    }, 1000);
+                                } else {
+                                    status.removeClass('ui-state-highlight').addClass('ui-state-error');
+                                    status.find('em').removeClass('ui-icon-info').addClass('ui-icon-alert');
+                                    status.find('span').text(resp.message);
+                                    status.slideDown(600);
+                                    app_wait.hide();
+                                    $('#btnSubmit').show();
+                                }
+                            }).fail(function() {
+                                status.removeClass('ui-state-highlight').addClass('ui-state-error');
+                                status.find('em').removeClass('ui-icon-info').addClass('ui-icon-alert');
+                                status.find('span').text("לא ניתן להגיע לשרת בשלב זה.");
+                                status.slideDown(600);
+                                app_wait.hide();
+                                $('#btnSubmit').show();
+                            });
+                        } else {
+                            status.removeClass('ui-state-highlight').addClass('ui-state-error');
+                            status.find('em').removeClass('ui-icon-info').addClass('ui-icon-alert');
+                            status.find('span').text("שלב לא ברור בתהליך");
+                            app_wait.hide();
+                            $('#btnSubmit').show();
+                        }
+                    }
+                },
+            });
+            // Upload widget
+            $.fn.uploadWidget = function() {
+                var lang = {
+                    default_title: 'קובץ שמע',
+                    upload_success: 'העלאה בוצעה בהצלחה.',
+                    upload_success_long: 'העלאה בוצעה בהצלחה.<br />קובץ אחרון <b class="span-ltr">XX</b> אורך <b>YY</b>',
+                    delete_success: 'הקובץ נמחק בהצלחה',
+                    status_none: 'קובץ שמע אינו מוגדר',
+                    status_duration: 'קובץ שמע מוגדר. אורך: <b>YY</b>',
+                    btn_upload: 'העלה קובץ',
+                    btn_delete: 'מחק קובץ',
+                    btn_play: 'השמע קובץ',
+                    btn_download: 'הורד קובץ למחשב'
+                };
+                var tpl = $('#upload-widget-template');
+                $(this).each(function() {
+                    var elm = $(this);
+                    var what = elm.data('what');
+                    var maxFiles = elm.data('max-files');
+                    if (!maxFiles) maxFiles = 1;
+                    var title_prefix = elm.data('title-prefix');
+                    var title = elm.data('title');
+                    if (!title_prefix) title_prefix = lang.default_title;
+                    if (title !== '') title = title_prefix + ": " + title;
+                    else title = lang.default_title;
+                    var widget_icon = elm.data('widget-icon');
+                    if (!widget_icon) widget_icon = "ui-icon-volume-on";
+                    elm.addClass("ui-widget upload-widget");
+                    tpl.clone().children().appendTo(elm);
+                    elm.find('.upload-widget-header > span').html(title);
+                    elm.find('.upload-widget-header > em.ui-icon').addClass(widget_icon);
+                    elm.data('file_present', null);
+                    var statusElm = elm.find('.upload-widget-status');
+                    if (elm.data('custom-status')) {
+                        statusElm.html(elm.data('custom-status'));
+                    } else if (elm.data('duration')) {
+                        statusElm.html(lang.status_duration);
+                        statusElm.find('b').text(elm.data('duration'));
+                        elm.data('file_present', true);
+                    } else {
+                        statusElm.html(lang.status_none);
+                        elm.data('file_present', false);
+                    }
+                    var uploadStatusElm = elm.find('.upload-widget-upload-status');
+                    var btn = elm.find('.upload-widget-buttons');
+                    $('<button class="upload-widget-btn-upload">' + lang.btn_upload + '</button>').button({
+                        icons: {
+                            secondary: 'ui-icon-arrowthick-1-n'
+                        }
+                    }).click(function() {
+                        $.audioUploadDialog({
+                            what: what,
+                            maxFiles: maxFiles,
+                            label: title,
+                            dialogTitle: title
+                        }).then(function(resp, reports) {
+                            elm.data('file_present', true);
+                            var customStatus = elm.data('custom-status');
+                            var report = {};
+                            if (reports && (reports.length > 0)) report = reports[reports.length - 1];
+                            if (!customStatus && report && report.durationStr) {
+                                statusElm.html(lang.status_duration);
+                                statusElm.find('b').text(report.durationStr);
+                            }
+                            if (customStatus) {
+                                var placeholders = uploadStatusElm.children('span').html(lang.upload_success_long)
+                                    .children('b');
+                                placeholders.eq(0).text(report.fileName);
+                                placeholders.eq(1).text(report.durationStr);
+                            } else {
+                                uploadStatusElm.children('span').html(lang.upload_success);
+                            }
+                            uploadStatusElm.slideDown(500);
+                            elm.trigger('uploadsuccess', [reports]);
+                            elm.trigger('filepresentchanged');
+                        });
+                        return false;
+                    }).appendTo(btn);
+                    if (elm.data('download') != "0") {
+                        btn.append("&nbsp;&nbsp;");
+                        $('<a href="dl.php?what=' + what + '" target="ym-dl" class="upload-widget-btn-download">' + lang.btn_download + '</a>')
+                            .button({
+                                icons: {
+                                    secondary: 'ui-icon-arrowthick-1-s'
+                                }
+                            }).appendTo(btn);
+                    }
+                    if (elm.data('delete') != "0") {
+                        btn.append("&nbsp;&nbsp;");
+                        $('<button class="upload-widget-btn-delete">' + lang.btn_delete + '</button>').button({
+                            icons: {
+                                secondary: 'ui-icon-trash'
+                            }
+                        }).click(function() {
+                            $('#audio-delete-confirm-dialog').data({
+                                    title: title,
+                                    what: what,
+                                    opener: elm
+                                })
+                                .dialog('open');
+                            return false;
+                        }).appendTo(btn);
+                        /*btn.append('<br><br><br><br><div class="palyer_wrapper" > <audio controls class="audio_file_palyer" style="float:right"> <source src="dl.php?what='+what+'" type="audio/mpeg"> Your browser does not support the audio element. </audio> </div>');*/
+                    }
+                    var btn_download = btn.children('.upload-widget-btn-download');
+                    var btn_delete = btn.children('.upload-widget-btn-delete');
+                    elm.on('deletesuccess', function() {
+                        elm.data('file_present', false);
+                        var customStatus = elm.data('custom-status');
+                        uploadStatusElm.children('span').html(lang.delete_success);
+                        uploadStatusElm.slideDown(500);
+                        if (!customStatus) statusElm.html(lang.status_none);
+                        elm.trigger('filepresentchanged');
+                    });
+                    elm.on('filepresentchanged', function() {
+                        var filePresent = $(this).data('file_present');
+                        if (filePresent === null) return;
+                        if (filePresent) {
+                            btn_download.button('enable');
+                            btn_delete.button('enable');
+                        } else {
+                            btn_download.button('disable');
+                            btn_delete.button('disable');
+                        }
+                    });
+                    elm.trigger('filepresentchanged');
+                    elm.trigger('uploadwidgetready');
+                });
+                return this;
+            }
+        })();
+        $(function() {
+            // Upload dialog
+            $('.upload-widget').uploadWidget();
+            var dlg = $('#audio-upload-dialog');
+            var e_wait = $('#audio-upload-dialog-wait');
+            var e_error = $('#audio-upload-dialog-error');
+            var e_label = $('#audio-upload-dialog-label');
+            var phpSessionId = '5db2c9ee68ed7c800fbbf2a36b525483';
+            var currentSettings = null;
+            var currentDeferred = null;
+            var uploadInProgress = false;
+            var uploadSuccessful = false;
+            var uploadResponse = null;
+            var uploadReports = [];
+            var cancelUpload = function() {
+                universalUploader.cancelUpload()
+                uploadInProgress = false;
+            };
+            universalUploader.init({
+                serialNumber: "00823542580165133252016213215726191771210188",
+                uploaders: "drag-and-drop",
+                singleUploader: true,
+                holder: "universal-uploader-container",
+                width: "730",
+                height: "250",
+                chunkedUpload: true,
+                chunkSize: 524288, //Url to file processing script
+                url: "eit/uploadfiles.php",
+                imagesPath: "eit/universaluploader/universal/images/",
+                flash_swfUrl: "eit/universaluploader/universal/uploaders/ElementITMultiPowUpload.swf",
+                silverlight_xapUrl: "eit/universaluploader/universal/uploaders/UltimateUploader.xap",
+                fileFilter_disabledTypes: "php,cgi,jar,sh,js,exe,scr,com,dll,so,bat,vbs,xls,xlsx,",
+                postFields: {},
+                handlers: {
+                    FileUploadComplete: function(f, e, d) {
+                        var parts = d.split("###BH###");
+                        if (parts.length < 2) {
+                            if (typeof(console) != "undefined") console.log("Server response invalid:" + d);
+                            return;
+                        }
+                        var resp = $.parseJSON(parts[1]);
+                        if (!resp || (resp.BH != "BH")) {
+                            if (typeof(console) != "undefined") console.log("Server response invalid:" + d);
+                            return;
+                        }
+                        uploadResponse = resp;
+                        if (/tpl:(\d+):msg/.test(resp.what)) upload2campaign(resp.what) //if (typeof(console) != "undefined") console.log(resp);
+                        if (resp && resp.response && resp.response.reports) {
+                            $.each(resp.response.reports, function(idx, rep) {
+                                uploadReports.push(rep);
+                            });
+                        }
+                    },
+                    UploadComplete: function(uploaderId) {
+                        uploadSuccessful = true;
+                        uploadInProgress = false;
+                        dlg.next('.ui-dialog-buttonpane').find('button').eq(1).button('enable');
+                    }
+                }
+            });
+            dlg.dialog({
+                autoOpen: false,
+                width: 770,
+                modal: true,
+                open: function() {
+                    uploadInProgress = false;
+                    uploadSuccessful = false;
+                    uploadResponse = null;
+                    uploadReports = [];
+                    e_wait.hide();
+                    e_error.hide();
+                    dlg.dialog("option", "title", currentSettings.dialogTitle);
+                    e_label.html(currentSettings.label);
+                    dlg.next('.ui-dialog-buttonpane').find('button').button('enable');
+                    universalUploader.clearList();
+                    universalUploader.setParameter("postFields", {
+                        uploader_sid: phpSessionId,
+                        what: currentSettings.what
+                    });
+                    universalUploader.setParameter("fileFilter_maxCount", currentSettings.maxFiles);
+                },
+                close: function() {
+                    if (uploadSuccessful) {
+                        currentDeferred.resolve(uploadResponse, uploadReports);
+                    } else {
+                        if (uploadInProgress) cancelUpload();
+                        currentDeferred.reject(uploadResponse);
+                    }
+                },
+                buttons: {
+                    'ביטול': function() {
+                        if (uploadInProgress) cancelUpload();
+                        dlg.dialog("close");
+                    },
+                    'אישור': function() {
+                        if (uploadSuccessful) {
+                            uploadInProgress = false;
+                            dlg.dialog("close");
+                            return;
+                        }
+                        if (universalUploader.getFilesCount() < 1) {
+                            return;
+                        }
+                        e_wait.show();
+                        // Disable OK button
+                        dlg.next('.ui-dialog-buttonpane').find('button').eq(1).button('disable');
+                        uploadInProgress = true;
+                        uploadResponse = null;
+                        uploadReports = [];
+                        universalUploader.upload();
+                    }
+                }
+            });
+
+            function upload2campaign(what) {
+                var maxindex = 0;
+                var testindex = 0;
+                $.ajax({
+                    type: "POST",
+                    url: 'ws.php?ws=YDGetIVR2Extension',
+                    data: {
+                        path: '/campaign'
+                    },
+                    dataType: 'json'
+                }).done(function(resp) {
+                    if (resp.responseStatus === "OK") {
+                        for (i = 0; i < resp.files.length; i++) {
+                            if (resp.files[i].fileType === 'TTS' || resp.files[i].fileType === 'AUDIO') {
+                                testindex = resp.files[i].name.replace(/\.[^/.]+$/, "");
+                                testindex = +testindex;
+                                if (testindex > maxindex) maxindex = testindex;
+                            };
+                        }
+                        copy2campaign(what, 'ivr2:/campaign/' + createIndex(maxindex + 1) + '.wav');
+                    } else {
+                        createFolder(what, 'ivr2:/campaign');
+                    }
+                })
+            }
+
+            function copy2campaign(what, target) {
+                $.ajax({
+                    type: "POST",
+                    url: 'ws.php?ws=YDFileAction',
+                    data: {
+                        what: what,
+                        target: target,
+                        action: 'copy'
+                    },
+                    dataType: 'json'
+                }).done(function(myresp) {
+                    if (myresp.responseStatus == "OK") {
+                        console.log('ini succesfuly uploaded');
+                    }
+                });
+            }
+
+            function createIndex(index) {
+                index = index.toString();
+                return ('000' + index).substring(index.length);
+            }
+
+            function createFolder(what, path) {
+                $.ajax({
+                    type: "POST",
+                    url: 'ws.php?ws=YDIVR2UpdateExtension',
+                    dataType: 'json',
+                    data: {
+                        "_path": path,
+                        type: ''
+                    }
+                }).done(function(resp) {
+                    console.log(resp)
+                    if (resp.responseStatus == "OK") {
+                        copy2campaign(what, 'ivr2:/campaign/001.wav');
+                    }
+                });
+            }
+            /*
+             * options:
+             * what: upload path that is passed as-is to the WS
+             * label: text label to show in the dialog - describes the meaning of the upload
+             * dialogTitle: substitute the default dialog's title
+             * maxFiles: maximum files that can be uploaded. -1 means unlimited
+             * returns a $.Deferred instance that can be used to run callback on successful/failed upload
+             */
+            $.audioUploadDialog = function(options) {
+                var settings = $.extend({
+                    what: null,
+                    label: null,
+                    dialogTitle: 'העלאת קובץ שמע',
+                    maxFiles: 1
+                }, options);
+                if ((settings.what == null) || (settings.label == null)) {
+                    if (typeof(console) == "object") console.log("audioUploadDialog: missing required options");
+                    return null;
+                }
+                if (dlg.dialog("isOpen")) {
+                    if (typeof(console) == "object") console.log("audioUploadDialog: dialog double entry forbidden");
+                    return null;
+                }
+                currentDeferred = $.Deferred();
+                currentSettings = settings;
+                uploadResponse = null;
+                dlg.data("uploadStatusReport", function(resp, success) {
+                    uploadResponse = resp;
+                    uploadSuccessful = success;
+                    uploadInProgress = false;
+                    e_wait.hide();
+                    if (success) {
+                        e_error.hide();
+                        dlg.dialog("close");
+                    } else {
+                        e_error.slideDown(500);
+                        e_file.val('');
+                        dlg.next('.ui-dialog-buttonpane').find('button').button('enable');
+                    }
+                });
+                dlg.dialog("open");
+                return currentDeferred;
+            };
+            // Delete confirm
+            (function() {
+                var dlg = $('#audio-delete-confirm-dialog');
+                var e_error = dlg.find('.dialog-elm-error');
+                var e_wait = dlg.find('.dialog-elm-wait');
+                var e_title = dlg.find('.dialog-elm-message > b');
+                dlg.dialog({
+                    autoOpen: false,
+                    width: 450,
+                    modal: true,
+                    open: function() {
+                        e_error.hide();
+                        e_wait.hide();
+                        e_title.text(dlg.data('title')); //&&&
+                        dlg.next('.ui-dialog-buttonpane').find('button').button('enable');
+                    },
+                    buttons: {
+                        'ביטול': function() {
+                            dlg.dialog("close");
+                        },
+                        'אישור': function() {
+                            var what = dlg.data('what');
+                            dlg.next('.ui-dialog-buttonpane').find('button').button('disable');
+                            e_error.hide();
+                            e_wait.show();
+                            $.ajax("ws.php?ws=YDDeleteFile", {
+                                type: "POST",
+                                data: {
+                                    what: what
+                                },
+                                dataType: 'json'
+                            }).done(function(resp) {
+                                if (resp.responseStatus != "OK") {
+                                    e_error.slideDown(500);
+                                    return;
+                                }
+                                dlg.dialog("close");
+                                var opener = dlg.data("opener");
+                                if (opener) opener.trigger('deletesuccess', [dlg]);
+                            }).fail(function() {
+                                e_error.slideDown(500);
+                            }).always(function() {
+                                e_wait.hide();
+                                dlg.next('.ui-dialog-buttonpane').find('button').button('enable');
+                            });
+                        }
+                    }
+                });
+            })();
+        });
+    </script>
+    </body>
+</html>
